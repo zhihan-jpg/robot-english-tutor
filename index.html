@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0f766e" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0e1319" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,211 +17,209 @@
 <title>RoboTutor 任务一</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-  /* Layout: one phone-width column (max 430px) centered on wide screens; each step is a full "screen" with a fixed bottom action bar. */
+  /* Minimal: white page, ink text, hairlines. One accent (ink) for the primary action and the selected state. */
   :root {
-    --bg: #eef1f5; --card: #ffffff; --ink: #141a24; --muted: #5f6b7a; --line: #dde3ea;
-    --accent: #0f766e; --accent-ink: #ffffff; --accent-soft: #d9f0ec;
-    --sam: #0f766e; --priya: #6d28d9; --tanaka: #1d4ed8; --you: #b45309; --good: #15803d; --warn: #b45309; --bad: #b91c1c;
-    --bubble: #ffffff; --bubble-you: #0f766e; --bubble-you-ink: #ffffff; --stage: #fff7e6;
+    --bg: #ffffff; --soft: #f4f4f4; --ink: #111111; --muted: #7a7a7a; --line: #e4e4e4;
+    --accent: #111111; --accent-ink: #ffffff;
+    --good: #2f7a4f; --warn: #a3671a; --bad: #b3362f;
     --display: "Lexend", -apple-system, "PingFang SC", "Noto Sans SC", sans-serif;
     --body: -apple-system, "PingFang SC", "Helvetica Neue", "Noto Sans SC", sans-serif;
     --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #0e1319; --card: #171e27; --ink: #e8edf3; --muted: #94a1b2; --line: #28323e;
-      --accent: #2dd4bf; --accent-ink: #06211e; --accent-soft: #163b36;
-      --sam: #2dd4bf; --priya: #a78bfa; --tanaka: #93c5fd; --you: #fbbf24; --good: #4ade80; --warn: #fbbf24; --bad: #f87171;
-      --bubble: #1f2832; --bubble-you: #2dd4bf; --bubble-you-ink: #06211e; --stage: #2a2416; color-scheme: dark;
+      --bg: #0f0f0f; --soft: #1a1a1a; --ink: #f1f1f1; --muted: #8c8c8c; --line: #2a2a2a;
+      --accent: #f1f1f1; --accent-ink: #0f0f0f; --good: #7fc59a; --warn: #d6a35a; --bad: #e08078; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #0e1319; --card: #171e27; --ink: #e8edf3; --muted: #94a1b2; --line: #28323e;
-    --accent: #2dd4bf; --accent-ink: #06211e; --accent-soft: #163b36;
-    --sam: #2dd4bf; --priya: #a78bfa; --tanaka: #93c5fd; --you: #fbbf24; --good: #4ade80; --warn: #fbbf24; --bad: #f87171;
-    --bubble: #1f2832; --bubble-you: #2dd4bf; --bubble-you-ink: #06211e; --stage: #2a2416; color-scheme: dark;
+    --bg: #0f0f0f; --soft: #1a1a1a; --ink: #f1f1f1; --muted: #8c8c8c; --line: #2a2a2a;
+    --accent: #f1f1f1; --accent-ink: #0f0f0f; --good: #7fc59a; --warn: #d6a35a; --bad: #e08078; color-scheme: dark;
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); }
-  body { overflow: hidden; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 var(--body); overflow: hidden; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; }
   .phone { max-width: 430px; margin: 0 auto; height: 100%; height: 100dvh; display: flex; flex-direction: column; background: var(--bg); position: relative; overflow: hidden; }
-  @media (min-width: 600px) { .phone { height: min(860px, 100vh); margin-block: max(0px, calc((100vh - 860px) / 2)); border: 1px solid var(--line); border-radius: 36px; box-shadow: 0 30px 60px rgba(0,0,0,.18); } }
+  @media (min-width: 600px) { .phone { height: min(860px, 100vh); margin-block: max(0px, calc((100vh - 860px) / 2)); border: 1px solid var(--line); border-radius: 28px; } }
 
-  .top { flex: none; display: flex; align-items: center; gap: 10px; padding: 12px 16px 8px; background: var(--bg); }
-  .top .back { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 18px; cursor: pointer; }
+  .top { flex: none; display: flex; align-items: center; gap: 10px; padding: 14px 20px 8px; }
+  .top .back { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: transparent; font-size: 18px; line-height: 1; cursor: pointer; margin-left: -6px; }
   .top .back[hidden] { display: none; }
-  .top .ttl { font-family: var(--display); font-weight: 600; font-size: 15px; }
-  .top .step { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--muted); }
-  .progress { height: 4px; background: var(--line); margin: 0 16px 4px; border-radius: 2px; overflow: hidden; }
-  .progress i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .4s; }
+  .top .ttl { font-weight: 600; font-size: 15px; }
+  .top .step { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .progress { height: 1px; background: var(--line); margin: 0 20px 4px; }
+  .progress i { display: block; height: 100%; background: var(--ink); width: 0; transition: width .3s; }
 
-  .screen { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 16px 110px; display: none; min-width: 0; }
+  .screen { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 20px 110px; display: none; min-width: 0; }
   .screen.on { display: block; }
-  .bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, var(--bg) 70%, transparent); display: flex; gap: 10px; }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px calc(14px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, var(--bg) 75%, transparent); display: flex; gap: 8px; }
   .bar:empty { display: none; }
-  .btn { flex: 1; border: 0; border-radius: 14px; padding: 14px; font: 600 16px var(--display); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
-  .btn.ghost { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
-  .btn:disabled { opacity: .45; cursor: default; }
-  .btn:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn { flex: 1; border: 1px solid var(--accent); border-radius: 12px; padding: 14px; font: 500 15px var(--body); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .btn:focus-visible, button:focus-visible { outline: 1px solid var(--ink); outline-offset: 2px; }
 
-  h1 { font: 700 26px/1.2 var(--display); margin: 8px 0 4px; text-wrap: balance; }
-  h2 { font: 600 13px var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 22px 0 10px; }
-  .eyebrow { font-family: var(--mono); font-size: 12px; color: var(--accent); }
-  .lead { color: var(--muted); margin: 0 0 14px; }
+  h1 { font: 600 24px/1.25 var(--display); margin: 6px 0 6px; text-wrap: balance; letter-spacing: -.01em; }
+  h2 { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 28px 0 10px; }
+  .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--muted); }
+  .lead { color: var(--muted); margin: 0 0 8px; font-size: 14px; }
 
   .picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .pick { border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 16px; padding: 12px 6px 10px; text-align: center; cursor: pointer; font: inherit; display: grid; gap: 2px; justify-items: center; }
-  .pick .ic { font-size: 22px; }
-  .pick b { font-family: var(--display); font-weight: 600; font-size: 14px; }
-  .pick small { color: var(--muted); font-size: 11px; line-height: 1.3; }
-  .pick.on { border-color: var(--accent); background: var(--accent-soft); }
+  .pick { border: 1px solid var(--line); background: transparent; border-radius: 12px; padding: 14px 8px 12px; text-align: center; cursor: pointer; display: grid; gap: 2px; justify-items: center; }
+  .pick .ic { display: none; }
+  .pick b { font-weight: 600; font-size: 14px; }
+  .pick small { color: var(--muted); font-size: 11px; line-height: 1.35; }
+  .pick.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
 
-  .task { background: var(--card); border-radius: 20px; padding: 18px; border: 1px solid var(--line); margin-top: 14px; }
-  .task .tt { font-family: var(--display); font-weight: 600; font-size: 16px; }
-  .task .setting { color: var(--muted); font-size: 13px; margin: 4px 0 10px; }
-  .task .meta { display: flex; gap: 14px; margin-top: 12px; font-family: var(--mono); font-size: 12px; color: var(--muted); flex-wrap: wrap; }
-  .task .goals { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .task { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 20px; }
+  .task .tt { font-weight: 600; font-size: 16px; }
+  .task .setting { color: var(--muted); font-size: 13px; margin: 4px 0 12px; }
+  .task .meta { display: flex; gap: 14px; margin-top: 14px; font-family: var(--mono); font-size: 11px; color: var(--muted); flex-wrap: wrap; }
+  .task .goals { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
   .task .goals li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
-  .task .goals li::before { content: ""; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--accent); flex: none; margin-top: 2px; }
+  .task .goals li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); flex: none; margin-top: 9px; }
 
-  .cast { display: grid; gap: 10px; }
-  .person { display: flex; gap: 12px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
-  .person.locked { opacity: .55; }
-  .avatar { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font: 700 18px var(--display); color: #fff; flex: none; }
-  .avatar.sam { background: var(--sam); } .avatar.priya { background: var(--priya); } .avatar.tanaka { background: var(--tanaka); } .avatar.you { background: var(--you); } .avatar.grey { background: #7b8794; }
-  .person b { font-family: var(--display); font-weight: 600; display: block; }
+  .cast { display: grid; }
+  .person { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--line); }
+  .person:first-child { border-top: 0; padding-top: 0; }
+  .person.locked { opacity: .5; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font: 500 14px var(--display); color: var(--ink); border: 1px solid var(--ink); flex: none; background: transparent; }
+  .avatar.you { background: var(--ink); color: var(--bg); }
+  .avatar.grey { border-color: var(--line); color: var(--muted); }
+  .person b { font-weight: 600; display: block; }
   .person small { color: var(--muted); font-size: 13px; display: block; }
-  .person .role { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+  .person .role { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; color: var(--muted); }
 
   /* word cards */
-  .deck { position: relative; min-height: 380px; }
-  .wcard { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 26px 22px 22px; box-shadow: 0 12px 30px rgba(0,0,0,.08); }
-  .wcard .cat { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .wcard .w { font: 700 30px/1.1 var(--display); margin: 8px 0 2px; word-break: break-word; }
-  .wcard .ipa { font-family: var(--mono); font-size: 14px; color: var(--muted); }
-  .wcard .say { margin-left: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px; padding: 3px 10px; font-size: 13px; cursor: pointer; }
-  .wcard .zh { font-size: 20px; font-weight: 600; color: var(--accent); margin: 14px 0 8px; }
+  .deck { position: relative; min-height: 360px; }
+  .wcard { border: 1px solid var(--line); border-radius: 16px; padding: 24px 20px 20px; background: var(--bg); }
+  .wcard .cat { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; color: var(--muted); }
+  .wcard .w { font: 600 30px/1.1 var(--display); margin: 10px 0 2px; word-break: break-word; letter-spacing: -.01em; }
+  .wcard .ipa { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .wcard .say { margin-left: 8px; border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 2px 10px; font-size: 12px; cursor: pointer; color: var(--muted); }
+  .wcard .zh { font-size: 18px; font-weight: 600; margin: 16px 0 6px; }
   .wcard .def { color: var(--muted); font-size: 14px; }
-  .wcard .ex { margin-top: 14px; padding: 12px 14px; background: var(--bg); border-radius: 14px; font-size: 15px; border-left: 3px solid var(--accent); }
-  .wcard .ex small { display: block; color: var(--muted); margin-top: 4px; font-size: 13px; }
-  .wcard .hook { margin-top: 12px; font-size: 13px; color: var(--muted); }
-  .wcard .hook b { color: var(--ink); }
-  .dots { display: flex; gap: 6px; justify-content: center; margin: 14px 0 0; }
-  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
-  .dots i.on { background: var(--accent); width: 20px; border-radius: 4px; }
+  .wcard .ex { margin-top: 16px; padding: 0 0 0 12px; border-left: 1px solid var(--ink); font-size: 15px; }
+  .wcard .ex small { display: block; color: var(--muted); margin-top: 2px; font-size: 13px; }
+  .wcard .hook { margin-top: 14px; font-size: 13px; color: var(--muted); }
+  .wcard .hook b { color: var(--ink); font-weight: 600; }
+  .dots { display: flex; gap: 6px; justify-content: center; margin: 16px 0 0; }
+  .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+  .dots i.on { background: var(--ink); width: 18px; border-radius: 3px; }
   .dots i.ok { background: var(--good); }
   .dots i.no { background: var(--bad); }
 
   /* quiz */
-  .q { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; }
-  .q .stem { font-size: 17px; font-weight: 600; margin: 0 0 4px; }
-  .q .stem code { font-family: var(--mono); background: var(--accent-soft); color: var(--accent); padding: 0 6px; border-radius: 6px; }
-  .q .hint { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
-  .opts { display: grid; gap: 10px; }
-  .opt { text-align: left; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 14px; padding: 13px 14px; font: 500 15px var(--body); cursor: pointer; display: flex; gap: 10px; align-items: center; }
-  .opt .k { font-family: var(--mono); font-size: 12px; color: var(--muted); width: 18px; }
-  .opt.right { border-color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--bg)); }
-  .opt.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, var(--bg)); }
+  .q { border-top: 1px solid var(--line); padding-top: 16px; }
+  .q .stem { font-size: 17px; font-weight: 600; margin: 0 0 4px; line-height: 1.5; }
+  .q .stem code { font-family: var(--mono); border-bottom: 1px solid var(--ink); padding: 0 6px; }
+  .q .hint { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .opts { display: grid; gap: 8px; }
+  .opt { text-align: left; border: 1px solid var(--line); background: transparent; border-radius: 12px; padding: 12px 14px; font: 15px var(--body); cursor: pointer; display: flex; gap: 12px; align-items: center; }
+  .opt .k { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 14px; }
+  .opt.right { border-color: var(--good); color: var(--good); }
+  .opt.wrong { border-color: var(--bad); color: var(--bad); }
   .opt:disabled { cursor: default; }
-  .fb { margin-top: 12px; padding: 12px 14px; border-radius: 12px; font-size: 14px; background: var(--accent-soft); display: none; }
+  .fb { margin-top: 14px; padding: 0 0 0 12px; border-left: 1px solid var(--ink); font-size: 14px; display: none; }
   .fb.on { display: block; }
 
   /* chat */
-  .chat { display: flex; flex-direction: column; gap: 10px; }
-  .row { display: flex; gap: 8px; align-items: flex-end; }
+  .chat { display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; gap: 10px; align-items: flex-start; }
   .row.me { flex-direction: row-reverse; }
-  .row .avatar { width: 30px; height: 30px; font-size: 13px; }
-  .row .who { font-family: var(--mono); font-size: 10px; color: var(--muted); margin: 0 0 2px 4px; }
-  .bub { max-width: 82%; padding: 10px 14px; border-radius: 18px; background: var(--bubble); border: 1px solid var(--line); font-size: 15px; border-bottom-left-radius: 6px; }
-  .row.me .bub { background: var(--bubble-you); color: var(--bubble-you-ink); border-color: transparent; border-bottom-right-radius: 6px; border-bottom-left-radius: 18px; }
-  .stagecard { align-self: stretch; background: var(--stage); border: 1px dashed var(--warn); border-radius: 14px; padding: 10px 14px; font-size: 14px; }
-  .tip { align-self: center; max-width: 92%; font-size: 13px; padding: 8px 12px; border-radius: 12px; background: var(--accent-soft); color: var(--ink); }
-  .tip.lvl0 { background: color-mix(in srgb, var(--bad) 14%, var(--card)); }
-  .tip.lvl1 { background: color-mix(in srgb, var(--warn) 16%, var(--card)); }
-  .typing { display: inline-flex; gap: 4px; padding: 12px 14px; }
-  .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1s infinite; }
+  .row .avatar { width: 26px; height: 26px; font-size: 11px; margin-top: 2px; }
+  .row .who { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; color: var(--muted); margin: 0 0 2px; }
+  .bub { max-width: 84%; padding: 0; font-size: 15px; }
+  .row.me .bub { background: var(--soft); padding: 10px 14px; border-radius: 14px; border-bottom-right-radius: 4px; }
+  .stagecard { font-size: 13px; color: var(--muted); border-left: 1px solid var(--line); padding-left: 12px; }
+  .tip { font-size: 13px; color: var(--muted); padding-left: 12px; border-left: 1px solid var(--line); margin-left: 36px; }
+  .tip.lvl0 { border-left-color: var(--bad); }
+  .tip.lvl1 { border-left-color: var(--warn); }
+  .typing { display: inline-flex; gap: 4px; padding: 6px 0; }
+  .typing i { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); animation: blink 1s infinite; }
   .typing i:nth-child(2) { animation-delay: .2s; } .typing i:nth-child(3) { animation-delay: .4s; }
   @keyframes blink { 0%, 60%, 100% { opacity: .3 } 30% { opacity: 1 } }
-  .choices { margin-top: 14px; display: grid; gap: 8px; }
-  .choices .lbl { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .choice { text-align: left; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 14px; padding: 12px 14px; font: 15px var(--body); cursor: pointer; }
+  .choices { margin-top: 18px; display: grid; gap: 8px; }
+  .choices .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+  .choice { text-align: left; border: 1px solid var(--line); background: transparent; border-radius: 12px; padding: 12px 14px; font: 15px var(--body); cursor: pointer; }
   .choice:disabled { opacity: .5; cursor: default; }
-  .goalbar { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 12px; }
-  .goalbar span { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--muted); }
-  .goalbar span.done { border-color: var(--good); color: var(--good); }
+  .goalbar { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 16px; }
+  .goalbar span { font-size: 11px; border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px; color: var(--muted); }
+  .goalbar span.done { border-color: var(--ink); color: var(--ink); }
 
   /* result */
-  .score { text-align: center; padding: 20px 0 6px; }
-  .score .big { font: 700 56px/1 var(--display); font-variant-numeric: tabular-nums; }
-  .score .stars { font-size: 26px; letter-spacing: 4px; margin-top: 4px; color: var(--warn); }
-  .score .sub { color: var(--muted); font-size: 13px; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
-  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; text-align: center; }
-  .stat b { font: 600 20px var(--display); display: block; font-variant-numeric: tabular-nums; }
-  .stat small { color: var(--muted); font-size: 12px; }
-  .words { display: grid; gap: 8px; }
-  .wl { display: flex; justify-content: space-between; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; gap: 8px; }
-  .wl b { font-family: var(--display); font-weight: 600; }
+  .score { text-align: center; padding: 24px 0 6px; }
+  .score .big { font: 600 56px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .score .stars { font-size: 18px; letter-spacing: 6px; margin-top: 8px; color: var(--ink); }
+  .score .sub { color: var(--muted); font-size: 12px; font-family: var(--mono); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 20px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { padding: 12px 6px; text-align: center; border-left: 1px solid var(--line); }
+  .stat:first-child { border-left: 0; }
+  .stat b { font: 600 18px var(--display); display: block; font-variant-numeric: tabular-nums; }
+  .stat small { color: var(--muted); font-size: 11px; }
+  .words { display: grid; }
+  .wl { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); gap: 8px; }
+  .wl:first-child { border-top: 0; }
+  .wl b { font-family: var(--display); font-weight: 500; }
   .wl small { color: var(--muted); }
-  .wl .st { font-size: 12px; border-radius: 999px; padding: 2px 8px; flex: none; }
-  .wl .st.ok { background: color-mix(in srgb, var(--good) 15%, var(--card)); color: var(--good); }
-  .wl .st.re { background: color-mix(in srgb, var(--warn) 18%, var(--card)); color: var(--warn); }
-  .note { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; gap: 12px; }
-  .note p { margin: 0; font-size: 14px; }
+  .wl .st { font-size: 11px; font-family: var(--mono); flex: none; color: var(--muted); }
+  .wl .st.ok { color: var(--good); }
+  .wl .st.re { color: var(--warn); }
+  .note { display: flex; gap: 12px; align-items: flex-start; }
+  .note p { margin: 0; font-size: 15px; line-height: 1.6; }
   .combos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .combo { font-size: 11px; text-align: center; border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px; color: var(--muted); background: var(--card); cursor: pointer; }
-  .combo.done { border-color: var(--good); color: var(--good); }
-  .combo.cur { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-  /* main menu + daily check-in */
-  .idbar { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; margin: 6px 0 18px; }
-  .idbar .avatar { width: 38px; height: 38px; font-size: 15px; }
-  .idbar b { font-family: var(--display); font-weight: 600; display: block; font-size: 15px; }
+  .combo { font-size: 11px; text-align: center; border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px; color: var(--muted); cursor: pointer; line-height: 1.4; }
+  .combo.done { color: var(--ink); }
+  .combo.cur { border-color: var(--ink); color: var(--ink); }
+
+  /* menu */
+  .idbar { display: flex; align-items: center; gap: 12px; padding: 4px 0 16px; border-bottom: 1px solid var(--line); margin: 4px 0 20px; }
+  .idbar b { font-weight: 600; display: block; font-size: 15px; }
   .idbar small { color: var(--muted); font-size: 12px; display: block; }
-  .idbar .chg { margin-left: auto; border: 1px solid var(--line); background: transparent; color: var(--accent); border-radius: 999px; padding: 6px 12px; font: 600 13px var(--display); cursor: pointer; flex: none; }
-  .entries { display: grid; gap: 12px; }
-  .entry { display: flex; gap: 14px; align-items: center; width: 100%; text-align: left; background: var(--card); border: 1.5px solid var(--line); border-radius: 20px; padding: 18px 16px; cursor: pointer; font: inherit; color: var(--ink); }
-  .entry:active { border-color: var(--accent); }
-  .entry .ic { font-size: 30px; width: 44px; text-align: center; flex: none; }
-  .entry b { font-family: var(--display); font-weight: 600; font-size: 17px; display: block; }
+  .idbar .chg { margin-left: auto; border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 5px 12px; font-size: 12px; cursor: pointer; flex: none; color: var(--muted); }
+  .entries { display: grid; margin-top: 8px; }
+  .entry { display: flex; gap: 14px; align-items: center; width: 100%; text-align: left; background: transparent; border: 0; border-top: 1px solid var(--line); padding: 20px 0; cursor: pointer; }
+  .entry:last-child { border-bottom: 1px solid var(--line); }
+  .entry .ic { display: none; }
+  .entry b { font-weight: 600; font-size: 17px; display: block; }
   .entry small { color: var(--muted); font-size: 13px; display: block; margin-top: 3px; }
-  .entry .arrow { margin-left: auto; color: var(--muted); font-size: 24px; flex: none; }
-  .entry .badge { font-family: var(--mono); font-size: 11px; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
-  .mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .mini div { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px; text-align: center; }
-  .mini b { font: 600 20px var(--display); display: block; font-variant-numeric: tabular-nums; }
-  .mini small { color: var(--muted); font-size: 12px; }
-  .preview { margin-top: 18px; }
-  .preview .who { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .entry .arrow { margin-left: auto; color: var(--muted); font-size: 20px; flex: none; }
+  .entry .badge { font-family: var(--mono); font-size: 11px; color: var(--ink); margin-left: 8px; }
+  .mini { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .mini div { padding: 6px 0; text-align: left; }
+  .mini b { font: 600 22px var(--display); display: block; font-variant-numeric: tabular-nums; }
+  .mini small { color: var(--muted); font-size: 11px; }
+  .preview .who { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-top: 12px; font-size: 13px; color: var(--muted); }
   .preview .who span { display: inline-flex; align-items: center; gap: 6px; }
-  .preview .avatar { width: 28px; height: 28px; font-size: 12px; }
-  .streak { display: flex; align-items: center; gap: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px 18px; }
-  .streak .n { font: 700 44px/1 var(--display); font-variant-numeric: tabular-nums; }
-  .streak .l { color: var(--muted); font-size: 13px; }
-  .streak .r { margin-left: auto; text-align: right; font-size: 13px; color: var(--muted); }
-  .streak .r b { display: block; font: 600 18px var(--display); color: var(--ink); }
+  .preview .who .avatar { width: 24px; height: 24px; font-size: 10px; }
+
+  /* daily */
+  .streak { display: flex; align-items: flex-end; gap: 16px; padding: 8px 0 18px; border-bottom: 1px solid var(--line); }
+  .streak .n { font: 600 48px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .streak .l { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .streak .r { margin-left: auto; text-align: right; font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .streak .r b { display: block; font: 600 16px var(--display); color: var(--ink); }
   .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-  .cal div { aspect-ratio: 1; border-radius: 10px; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; color: var(--muted); background: var(--card); border: 1px solid var(--line); }
-  .cal div.done { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-  .cal div.today { border: 2px solid var(--accent); color: var(--accent); font-weight: 600; }
-  .cal div.today.done { color: var(--accent-ink); }
-  .cal div.future { opacity: .35; }
-  .dw { display: flex; justify-content: space-between; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; gap: 8px; }
-  .dw b { font-family: var(--display); font-weight: 600; }
+  .cal div { aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid transparent; }
+  .cal div.done { background: var(--ink); color: var(--bg); }
+  .cal div.today { border-color: var(--ink); color: var(--ink); }
+  .cal div.today.done { color: var(--bg); }
+  .dw { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); gap: 8px; }
+  .dw:first-child { border-top: 0; }
+  .dw b { font-family: var(--display); font-weight: 500; }
   .dw small { color: var(--muted); }
-  .dw .st { font-size: 11px; border-radius: 999px; padding: 2px 8px; flex: none; font-family: var(--mono); }
-  .dw .st.new { background: var(--accent-soft); color: var(--accent); }
-  .dw .st.rev { background: color-mix(in srgb, var(--warn) 18%, var(--card)); color: var(--warn); }
-  .dw .st.ok { background: color-mix(in srgb, var(--good) 15%, var(--card)); color: var(--good); }
+  .dw .st { font-size: 11px; font-family: var(--mono); flex: none; color: var(--muted); }
+  .dw .st.ok { color: var(--good); }
   .flipcard { cursor: pointer; }
   .flipcard .back { display: none; }
   .flipcard.flipped .back { display: block; }
   .flipcard.flipped .front-hint { display: none; }
-  .flipcard .front-hint { color: var(--muted); font-size: 13px; margin-top: 18px; text-align: center; }
-  .done-hero { text-align: center; padding: 24px 0 8px; }
-  .done-hero .big { font-size: 56px; }
+  .flipcard .front-hint { color: var(--muted); font-size: 13px; margin-top: 22px; text-align: center; }
+  .done-hero { text-align: left; padding: 8px 0 4px; }
+  .done-hero .big { display: none; }
   .done-hero h1 { margin: 6px 0 2px; }
-  .done-hero p { color: var(--muted); margin: 0; }
+  .done-hero p { color: var(--muted); margin: 0; font-size: 14px; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 
@@ -241,16 +239,16 @@
 
     <h2>你的身份</h2>
     <div class="picker" id="roles">
-      <button class="pick" data-r="engineer"><span class="ic">🔧</span><b>工程师</b><small>排查并汇报故障</small></button>
-      <button class="pick" data-r="pm"><span class="ic">🧭</span><b>产品经理</b><small>评估影响、找方案</small></button>
-      <button class="pick" data-r="pjm"><span class="ic">📅</span><b>项目经理</b><small>工期、风险、沟通</small></button>
+      <button class="pick" data-r="engineer"><b>工程师</b><small>排查并汇报故障</small></button>
+      <button class="pick" data-r="pm"><b>产品经理</b><small>评估影响、找方案</small></button>
+      <button class="pick" data-r="pjm"><b>项目经理</b><small>工期、风险、沟通</small></button>
     </div>
 
     <h2>要练的场合</h2>
     <div class="picker" id="scenes">
-      <button class="pick" data-s="one_on_one"><span class="ic">💬</span><b>一对一</b><small>实验室里和 Sam 谈</small></button>
-      <button class="pick" data-s="meeting"><span class="ic">🧑‍🤝‍🧑</span><b>团队会议</b><small>周一例会上发言</small></button>
-      <button class="pick" data-s="presentation"><span class="ic">🎤</span><b>客户演示</b><small>向 Mr. Tanaka 汇报</small></button>
+      <button class="pick" data-s="one_on_one"><b>一对一</b><small>实验室里和 Sam 谈</small></button>
+      <button class="pick" data-s="meeting"><b>团队会议</b><small>周一例会上发言</small></button>
+      <button class="pick" data-s="presentation"><b>客户演示</b><small>向 Mr. Tanaka 汇报</small></button>
     </div>
 
     <div class="task preview" id="setupPreview" hidden>
@@ -270,8 +268,8 @@
     <div class="eyebrow">TODAY</div>
     <h1>今天练什么？</h1>
     <div class="entries">
-      <button class="entry" id="goMission"><span class="ic">🎯</span><div><b>场景练习</b><small id="missionSub"></small></div><span class="arrow">›</span></button>
-      <button class="entry" id="goDaily"><span class="ic">📚</span><div><b>背单词 · 每日打卡</b><small id="dailySub"></small></div><span class="arrow">›</span></button>
+      <button class="entry" id="goMission"><div><b>场景练习</b><small id="missionSub"></small></div><span class="arrow">→</span></button>
+      <button class="entry" id="goDaily"><div><b>背单词 · 每日打卡</b><small id="dailySub"></small></div><span class="arrow">→</span></button>
     </div>
     <h2>我的进度</h2>
     <div class="mini">
@@ -291,7 +289,7 @@
       <div class="tt" id="taskTitle"></div>
       <div class="setting" id="taskSetting"></div>
       <ul class="goals" id="goals"></ul>
-      <div class="meta"><span>⏱ 约 6 分钟</span><span>📚 5 words</span><span>💬 4 turns</span></div>
+      <div class="meta"><span>约 6 分钟</span><span>5 个词</span><span>4 轮对话</span></div>
     </div>
 
     <h2>人物</h2>
@@ -380,7 +378,7 @@
 
   <!-- 8 DAILY DONE -->
   <section class="screen" id="s-ddone">
-    <div class="done-hero"><div class="big">✅</div><h1>今日打卡成功</h1><p id="ddoneSub"></p></div>
+    <div class="done-hero"><h1>今日打卡成功</h1><p id="ddoneSub"></p></div>
     <div class="streak" style="margin-top:14px">
       <div><div class="n" id="streakN2">0</div><div class="l">连续打卡天数</div></div>
       <div class="r"><b id="dquizScore">0/5</b>小测<br><b id="dueTomorrow">0</b>明天到期</div>
@@ -551,11 +549,11 @@ const TASKS = {
   {stem:"“已知问题”对应哪个词？",hint:"已经在跟踪、有方案的问题。",opts:["root cause","known issue","blocker"],ans:1,fb:"known issue。root cause 是根本原因，blocker 是卡点。"},
   {stem:"We've put a <code>____</code> in place: the joint is capped at 100 degrees.",hint:"缓解措施。",opts:["milestone","payload","mitigation"],ans:2,fb:"mitigation 缓解措施。milestone 里程碑，payload 负载。"}],
   dialog:[
-  {who:"stage",text:"🎤 开场。Mr. Tanaka 和两位工程师坐在前面。你先说第一句。",goal:0,opts:[
+  {who:"stage",text:"开场 · 开场。Mr. Tanaka 和两位工程师坐在前面。你先说第一句。",goal:0,opts:[
     {t:"Good morning. In the next ten minutes I'll walk you through what the arm can do today, one known issue, and how we're handling it.",s:2,fb:"开场说结构，主动提 known issue。客户立刻知道你不会藏事。"},
     {t:"Hello everyone, today I will introduce our robot arm. It is very good.",s:1,fb:"太空。给结构：A、B、C。"},
     {t:"Sorry, we have some problem with the arm, but let's start.",s:0,fb:"开场道歉等于把演示定调为失败。"}]},
-  {who:"stage",text:"📊 现状页。你要说明机械臂的 known issue。",goal:1,opts:[
+  {who:"stage",text:"现状 · 现状页。你要说明机械臂的 known issue。",goal:1,opts:[
     {t:"One known issue: under load, joint three stalls at 120 degrees. As a mitigation, we've capped it at 100 degrees for today, which covers your pick-and-place range.",s:2,fb:"问题、缓解措施、对客户意味着什么，一气呵成。"},
     {t:"There is a small problem but don't worry, it's fine.",s:0,fb:"客户最讨厌 “don't worry”。说清是什么、怎么处理。"},
     {t:"Joint three has problem at 120 degree, so today we only use 100 degree.",s:1,fb:"内容对。用 mitigation，并补一句 “which covers your range”。"}]},
@@ -563,7 +561,7 @@ const TASKS = {
     {t:"Nothing — repeatability is still 0.1 millimeters across the capped range. We measured it this morning; the numbers are on the next slide.",s:2,fb:"数字 + 测量时间 + 证据在哪。质疑就这样化解。"},
     {t:"It should be OK.",s:0,fb:"没有数据的回答，客户不会信。"},
     {t:"Repeatability is same, 0.1 mm.",s:1,fb:"有数字了，再加证据：measured this morning。"}]},
-  {who:"stage",text:"🏁 收尾。给客户留下要点，并说下一步。",goal:3,opts:[
+  {who:"stage",text:"收尾 · 收尾。给客户留下要点，并说下一步。",goal:3,opts:[
     {t:"Two takeaways: the arm meets your cycle time today, and the root cause fix lands next Wednesday. I'll send the test data this afternoon. Happy to take questions.",s:2,fb:"takeaway + 下一步 + 邀请提问。标准收尾。"},
     {t:"That's all. Thank you.",s:0,fb:"没有要点，客户带不走结论。"},
     {t:"So the problem will be fixed next week. Any questions?",s:1,fb:"先说正面 takeaway，再说修复时间。"}]}],
@@ -635,11 +633,11 @@ const TASKS = {
   {stem:"I can't <code>____</code> to the full range today, but it's on the roadmap for next month.",hint:"承诺。",opts:["escalate","commit","reproduce"],ans:1,fb:"commit to 承诺。"},
   {stem:"“产品路线图”对应哪个词？",hint:"未来功能的计划顺序。",opts:["timeline","milestone","roadmap"],ans:2,fb:"roadmap。timeline 是时间线，milestone 是里程碑。"}],
   dialog:[
-  {who:"stage",text:"🎤 开场。你代表产品方向客户介绍。先说第一句。",goal:0,opts:[
+  {who:"stage",text:"开场 · 开场。你代表产品方向客户介绍。先说第一句。",goal:0,opts:[
     {t:"Good morning. I'd like to start with your use case — 600 picks an hour on the packing line — and show you how the arm handles it today, including one limitation.",s:2,fb:"从客户的 use case 开场，并预告 limitation。"},
     {t:"Hello, today I will show you our product. It has many features.",s:1,fb:"从功能开场，客户不关心。从他的产线开场。"},
     {t:"Before we start, I should say the arm has a problem this week.",s:0,fb:"先道歉，演示就输了一半。"}]},
-  {who:"stage",text:"📊 说明 limitation：今天关节限制在 100 度。",goal:1,opts:[
+  {who:"stage",text:"现状 · 说明 limitation：今天关节限制在 100 度。",goal:1,opts:[
     {t:"One limitation today: the joint is capped at 100 degrees while our team fixes a fault. For your packing use case that range is enough; the full range comes back next week.",s:2,fb:"limitation + 对客户的意义 + 时间。"},
     {t:"There is a limitation, but it's not important.",s:0,fb:"重不重要由客户判断，你的工作是说清楚。"},
     {t:"Today only 100 degrees because the joint has a problem. Next week it is OK.",s:1,fb:"内容对。补上 “for your use case that's enough”。"}]},
@@ -647,7 +645,7 @@ const TASKS = {
     {t:"I can commit to the full range by the end of the month for line one. For line two I'd rather confirm the payload with your team first, then commit in writing.",s:2,fb:"承诺有边界：什么、什么时候、哪条线。"},
     {t:"Yes, no problem, we can do everything.",s:0,fb:"over-commit。月底做不到就是事故。"},
     {t:"Maybe. I need to check.",s:1,fb:"可以，但说清确认什么、什么时候回复。"}]},
-  {who:"stage",text:"🏁 收尾。请客户给反馈并说下一步。",goal:3,opts:[
+  {who:"stage",text:"收尾 · 收尾。请客户给反馈并说下一步。",goal:3,opts:[
     {t:"I'd love your feedback on the pick cycle you saw today. I'll send the roadmap for the full range tomorrow, and we can review line two together next week.",s:2,fb:"具体要 feedback + 两个明确的下一步。"},
     {t:"Thanks for coming. Bye.",s:0,fb:"没有下一步，客户关系就停在这里。"},
     {t:"Please tell me if you have any feedback.",s:1,fb:"feedback 要具体：on what? 再加下一步。"}]}],
@@ -719,11 +717,11 @@ const TASKS = {
   {stem:"If the part is late, our <code>____</code> is to run the acceptance tests on the capped range.",hint:"应急方案。",opts:["milestone","contingency","agenda"],ans:1,fb:"contingency 应急方案。"},
   {stem:"“验收签字”对应哪个词？",hint:"客户正式认可工作完成。",opts:["takeaway","lead time","sign-off"],ans:2,fb:"sign-off 验收签字。"}],
   dialog:[
-  {who:"stage",text:"🎤 开场。你向客户汇报项目进度，Mr. Tanaka 想知道周五能不能验收。",goal:0,opts:[
+  {who:"stage",text:"开场 · 开场。你向客户汇报项目进度，Mr. Tanaka 想知道周五能不能验收。",goal:0,opts:[
     {t:"Good morning. Three things today: where we are on the timeline, one risk to Friday's sign-off, and our contingency for it.",s:2,fb:"结构清楚，风险和应急方案都预告了。"},
     {t:"Hello. Today I will report the project.",s:1,fb:"给结构：三件事。"},
     {t:"Unfortunately we have a delay. Sorry about that.",s:0,fb:"开场道歉，客户只记住了 delay。"}]},
-  {who:"stage",text:"📊 说明风险：如果是编码器问题，会延期一周。",goal:1,opts:[
+  {who:"stage",text:"现状 · 说明风险：如果是编码器问题，会延期一周。",goal:1,opts:[
     {t:"The risk: joint three has a fault. If it's a tuning issue we stay on track; if it's the encoder, the sign-off slips one week. We'll know by tomorrow at 3.",s:2,fb:"两种情况 + 决策时间。客户可以拿去向老板汇报。"},
     {t:"There might be a delay, we are not sure yet.",s:0,fb:"不确定也要说清两种情况和什么时候确定。"},
     {t:"Maybe one week delay because of the encoder.",s:1,fb:"补上另一种情况和决策时间。"}]},
@@ -731,7 +729,7 @@ const TASKS = {
     {t:"Two parts. We've already ordered the encoder so a week is the worst case, and we can run your acceptance tests on the capped range this Friday so your team isn't idle.",s:2,fb:"对冲 + 对客户的安排。这就是 contingency。"},
     {t:"We will try to be faster.",s:0,fb:"“try” 不是方案。"},
     {t:"We ordered the part already.",s:1,fb:"好，再加对客户团队的安排。"}]},
-  {who:"stage",text:"🏁 收尾。给出修订计划并请客户确认。",goal:3,opts:[
+  {who:"stage",text:"收尾 · 收尾。给出修订计划并请客户确认。",goal:3,opts:[
     {t:"I'll send a revised plan tonight with both scenarios and dates. Could you confirm by Wednesday which one your line can accept?",s:2,fb:"revised plan + 时间 + 请客户确认的具体事项。"},
     {t:"That's all, thank you for listening.",s:0,fb:"没有计划也没有请求。"},
     {t:"I will send you the plan.",s:1,fb:"加时间，并说清请客户确认什么。"}]}],
@@ -791,7 +789,7 @@ function renderMenu() {
   const score = done[`${S.role}:${S.scene}`];
   $('#missionSub').innerHTML = `任务一 · 机械臂停机了 · ${esc(SC.label)}` + (score != null ? `<span class="badge">上次 ${score} 分</span>` : ` · 约 6 分钟`);
   const d = dailyState(), key = todayKey(), today = d.log[key], n = streak(d);
-  $('#dailySub').innerHTML = (today && today.done) ? `今日已打卡 ✓ · 连续 ${n} 天` : `今日 5 词待打卡` + (n ? ` · 已连续 ${n} 天` : '');
+  $('#dailySub').innerHTML = (today && today.done) ? `今日已打卡 · 连续 ${n} 天` : `今日 5 词待打卡` + (n ? ` · 已连续 ${n} 天` : '');
   $('#mStreak').textContent = n; $('#mWords').textContent = Object.keys(d.srs).length; $('#mCombos').textContent = `${Object.keys(done).length}/9`;
 }
 $('#chg').addEventListener('click', () => go('s-setup'));
@@ -837,11 +835,11 @@ function renderWord() {
   $('#deck').innerHTML = `<div class="wcard">
     <div class="cat">${esc(w.cat)} · ${S.wi + 1} / ${WORDS.length}</div>
     <div class="w">${esc(w.w)}</div>
-    <div><span class="ipa">${esc(w.ipa)}</span><button class="say" id="say">🔊 读一遍</button></div>
+    <div><span class="ipa">${esc(w.ipa)}</span><button class="say" id="say">朗读</button></div>
     <div class="zh">${esc(w.zh)}</div>
     <div class="def">${esc(w.def)}</div>
     <div class="ex">${esc(w.ex)}<small>${esc(w.exzh)}</small></div>
-    <div class="hook">💡 ${w.hook}</div>
+    <div class="hook">记法 · ${w.hook}</div>
   </div>`;
   $('#say').addEventListener('click', () => speak(w.w.replace(/\(.*?\)/g, '') + ". " + w.ex));
   $('#dots').innerHTML = WORDS.map((x, i) => `<i class="${i === S.wi ? 'on' : S.known[x.id] === true ? 'ok' : S.known[x.id] === false ? 'no' : ''}"></i>`).join('');
@@ -864,7 +862,7 @@ function renderQuiz() {
     const i = +b.dataset.i, right = i === q.ans; if (right) S.quizRight++;
     document.querySelectorAll('.opt').forEach(x => { x.disabled = true; if (+x.dataset.i === q.ans) x.classList.add('right'); });
     if (!right) b.classList.add('wrong');
-    const fb = $('#fb'); fb.className = "fb on"; fb.innerHTML = (right ? "✅ 正确。" : "❌ 不对。") + esc(q.fb);
+    const fb = $('#fb'); fb.className = "fb on"; fb.innerHTML = (right ? "正确。" : "不对。") + esc(q.fb);
     renderBar();
   }));
   renderBar();
@@ -903,11 +901,11 @@ function pick(i) {
   const d = DIALOG[S.di], o = d.opts[i];
   $('#choices').innerHTML = "";
   meSays(o.t); S.chatScore += o.s;
-  tip((o.s === 0 ? "⚠️ " : "💡 ") + o.fb + (o.s < 2 ? `<br><span style="color:var(--muted)">更好的说法：</span>“${esc(d.opts.find(x => x.s === 2).t)}”` : ""), o.s);
+  tip(o.fb + (o.s < 2 ? `<br><span style="color:var(--muted)">更好的说法：</span>“${esc(d.opts.find(x => x.s === 2).t)}”` : ""), o.s);
   if (o.s >= 1) $(`#goalbar [data-g="${d.goal}"]`).classList.add('done');
   S.di++;
   if (S.di < DIALOG.length) setTimeout(() => present(S.di), 300);
-  else npcSays(T.close.who, T.close.text, () => { tip("🎉 完成。点击下方查看结果。", 2); renderBar(); });
+  else npcSays(T.close.who, T.close.text, () => { tip("对话完成。点击下方查看结果。", 2); renderBar(); });
 }
 
 /* ================= DAILY CHECK-IN ================= */
@@ -956,12 +954,12 @@ function renderDWord() {
   $('#ddeck').innerHTML = `<div class="wcard flipcard" id="flip">
     <div class="cat">${esc(w.cat)}</div>
     <div class="w">${esc(w.w)}</div>
-    <div><span class="ipa">${esc(w.ipa)}</span><button class="say" id="dsay">🔊 读一遍</button></div>
+    <div><span class="ipa">${esc(w.ipa)}</span><button class="say" id="dsay">朗读</button></div>
     <div class="front-hint">想一想中文意思，然后点击翻面</div>
     <div class="back">
       <div class="zh">${esc(w.zh)}</div><div class="def">${esc(w.def)}</div>
       <div class="ex">${esc(w.ex)}<small>${esc(w.exzh)}</small></div>
-      <div class="hook">💡 ${w.hook}</div>
+      <div class="hook">记法 · ${w.hook}</div>
     </div></div>`;
   $('#flip').addEventListener('click', e => { if (e.target.id !== 'dsay') $('#flip').classList.add('flipped'); });
   $('#dsay').addEventListener('click', () => speak(w.w.replace(/\(.*?\)/g, '') + ". " + w.ex));
@@ -1000,7 +998,7 @@ function renderDQuiz() {
     const right = b.dataset.v === q.ans; if (right) D.right++;
     document.querySelectorAll('#dquiz .opt').forEach(x => { x.disabled = true; if (x.dataset.v === q.ans) x.classList.add('right'); });
     if (!right) b.classList.add('wrong');
-    const fb = $('#dfb'); fb.className = "fb on"; fb.textContent = (right ? "✅ 正确。" : "❌ 不对。") + q.fb;
+    const fb = $('#dfb'); fb.className = "fb on"; fb.textContent = (right ? "正确。" : "不对。") + q.fb;
     renderBar();
   }));
   renderBar();
@@ -1022,7 +1020,7 @@ function renderDone() {
   const known = WORDS.filter(w => S.known[w.id]).length;
   const score = Math.round(known / 5 * 30 + S.quizRight / 3 * 30 + S.chatScore / 8 * 40);
   $('#scoreNum').textContent = score;
-  $('#stars').textContent = score >= 85 ? "★★★" : score >= 60 ? "★★☆" : "★☆☆";
+  $('#stars').textContent = score >= 85 ? "优秀" : score >= 60 ? "良好" : "再练一次";
   $('#stWords').textContent = `${known}/5`; $('#stQuiz').textContent = `${S.quizRight}/3`; $('#stChat').textContent = `${S.chatScore}/8`;
   const main = CAST[SCENES[S.scene].main];
   $('#noteTitle').textContent = `${main.name} 的评语`;
