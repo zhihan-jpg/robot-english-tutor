@@ -1,4 +1,4 @@
-const CACHE = 'robotutor-20261014-193842';
+const CACHE = 'robotutor-20261014-194025';
 const PRECACHE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', e => {

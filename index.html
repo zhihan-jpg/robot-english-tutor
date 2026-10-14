@@ -309,33 +309,16 @@
       <div class="tt" id="taskTitle"></div>
       <div class="setting" id="taskSetting"></div>
       <ul class="goals" id="goals"></ul>
-      <div class="meta"><span>约 6 分钟</span><span>5 个词</span><span>4 轮对话</span></div>
+      <div class="meta"><span>4 轮对话</span><span>约 3 分钟</span></div>
     </div>
 
     <h2>人物</h2>
     <div class="cast" id="cast"></div>
   </section>
 
-  <!-- 1 WORDS -->
-  <section class="screen" id="s-words">
-    <div class="eyebrow">STEP 1 · 学词</div>
-    <h1 id="wordsTitle"></h1>
-    <p class="lead">看一张卡，判断自己认不认识。不认识的词会在最后标记为需要复习。</p>
-    <div class="deck" id="deck"></div>
-    <div class="dots" id="dots"></div>
-  </section>
-
-  <!-- 2 QUIZ -->
-  <section class="screen" id="s-quiz">
-    <div class="eyebrow">STEP 2 · 快测</div>
-    <h1>三道题</h1>
-    <p class="lead">选出正确的词。选完立即给出讲解。</p>
-    <div id="quiz"></div>
-  </section>
-
   <!-- 3 CHAT -->
   <section class="screen" id="s-chat">
-    <div class="eyebrow" id="chatEyebrow">STEP 3 · 场景对话</div>
+    <div class="eyebrow" id="chatEyebrow">场景对话</div>
     <h1 id="chatTitle"></h1>
     <p class="lead" id="chatLead"></p>
     <div class="goalbar" id="goalbar"></div>
@@ -352,14 +335,12 @@
       <div class="stars" id="stars"></div>
     </div>
     <div class="stats">
-      <div class="stat"><b id="stWords">0/5</b><small>认识的词</small></div>
-      <div class="stat"><b id="stQuiz">0/3</b><small>快测正确</small></div>
       <div class="stat"><b id="stChat">0/8</b><small>对话得分</small></div>
+      <div class="stat"><b id="stGoals">0/4</b><small>达成目标</small></div>
+      <div class="stat"><b id="stBest">0/4</b><small>最佳回应</small></div>
     </div>
     <h2 id="noteTitle">评语</h2>
     <div class="note"><div class="avatar" id="noteAvatar">S</div><p id="samNote"></p></div>
-    <h2>本次单词</h2>
-    <div class="words" id="wordsDone"></div>
     <h2>同一事件 · 9 种练法</h2>
     <div class="combos" id="combos"></div>
   </section>
@@ -759,13 +740,13 @@ const TASKS = {
 };
 
 /* ================= STATE ================= */
-const S = { role:null, scene:null, step:"s-setup", wi:0, known:{}, qi:0, quizRight:0, di:0, chatScore:0, answered:false };
+const S = { role:null, scene:null, step:"s-setup", di:0, chatScore:0, best:0 };
 let T = null, WORDS = [], QUIZ = [], DIALOG = [];
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const MISSION = ["s-home","s-words","s-quiz","s-chat","s-done"], DAILY = ["s-daily","s-dword","s-dquiz","s-ddone"];
-const TITLES = {"s-setup":"RoboTutor","s-menu":"RoboTutor","s-home":"任务一","s-words":"学词","s-quiz":"快测","s-chat":"场景对话","s-done":"完成","s-daily":"每日打卡","s-dword":"翻卡自评","s-dquiz":"小测","s-ddone":"打卡成功"};
-const BACK = {"s-home":"s-menu","s-words":"s-home","s-quiz":"s-words","s-chat":"s-quiz","s-daily":"s-menu","s-dword":"s-daily","s-dquiz":"s-dword"};
+const MISSION = ["s-home","s-chat","s-done"], DAILY = ["s-daily","s-dword","s-dquiz","s-ddone"];
+const TITLES = {"s-setup":"RoboTutor","s-menu":"RoboTutor","s-home":"任务一","s-chat":"场景对话","s-done":"完成","s-daily":"每日打卡","s-dword":"翻卡自评","s-dquiz":"小测","s-ddone":"打卡成功"};
+const BACK = {"s-home":"s-menu","s-chat":"s-home","s-daily":"s-menu","s-dword":"s-daily","s-dquiz":"s-dword"};
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 
 function loadTask() {
@@ -773,14 +754,13 @@ function loadTask() {
   const R = ROLES[S.role], SC = SCENES[S.scene];
   $('#taskTitle').textContent = `${R.label} · ${SC.title}`;
   $('#taskSetting').textContent = SC.setting;
-  $('#goals').innerHTML = T.goals.map(g => `<li>${esc(g)}</li>`).join('');
+  $('#goals').innerHTML = T.chips.map(g => `<li>${esc(g)}</li>`).join('');
   const people = SC.cast.map(id => CAST[id]).map(c => `<div class="person"><div class="avatar ${c.cls}">${c.ini}</div><div><span class="role">${esc(c.role)}</span><b>${esc(c.name)}</b><small>${esc(c.desc)}</small></div></div>`);
   people.push(`<div class="person"><div class="avatar you">${esc(R.you.ini)}</div><div><span class="role">你 · ${esc(R.label)}</span><b>${esc(R.you.name)}</b><small>${esc(R.you.desc)}</small></div></div>`);
   $('#cast').innerHTML = people.join('');
-  $('#wordsTitle').textContent = T.wordsTitle;
   $('#chatTitle').textContent = T.chatTitle;
   $('#chatLead').textContent = T.chatLead;
-  $('#chatEyebrow').textContent = `STEP 3 · ${SC.label}`;
+  $('#chatEyebrow').textContent = SC.label;
   $('#goalbar').innerHTML = T.chips.map((c, i) => `<span data-g="${i}">${esc(c)}</span>`).join('');
   $('#doneEyebrow').textContent = `MISSION 01 · ${R.label} · ${SC.label} · 完成`;
   store.set('rt.role', S.role); store.set('rt.scene', S.scene);
@@ -806,15 +786,15 @@ $('#chg').addEventListener('click', () => go('s-setup'));
 $('#goMission').addEventListener('click', () => go('s-home'));
 $('#goDaily').addEventListener('click', () => go('s-daily'));
 
-const RENDER = { "s-setup": renderSetup, "s-menu": renderMenu, "s-home": loadTask, "s-words": renderWord, "s-quiz": renderQuiz, "s-chat": startChat, "s-done": renderDone, "s-daily": renderDaily, "s-dword": renderDWord, "s-dquiz": renderDQuiz, "s-ddone": renderDDone };
+const RENDER = { "s-setup": renderSetup, "s-menu": renderMenu, "s-home": loadTask, "s-chat": startChat, "s-done": renderDone, "s-daily": renderDaily, "s-dword": renderDWord, "s-dquiz": renderDQuiz, "s-ddone": renderDDone };
 function go(id) {
   if (id !== "s-setup" && !(S.role && S.scene)) id = "s-setup";
   S.step = id;
   document.querySelectorAll('.screen').forEach(el => el.classList.toggle('on', el.id === id));
   $('#ttl').textContent = TITLES[id];
   const mi = MISSION.indexOf(id), di = DAILY.indexOf(id);
-  $('#stepLbl').textContent = (mi > 0 && mi < 4) ? `STEP ${mi}/3` : (di > 0 && di < 3) ? `${di}/2` : "";
-  $('#prog').style.width = (mi > 0 ? mi / 4 * 100 : di > 0 ? di / 3 * 100 : 0) + "%";
+  $('#stepLbl').textContent = (di > 0 && di < 3) ? `${di}/2` : "";
+  $('#prog').style.width = (mi > 0 ? mi / 2 * 100 : di > 0 ? di / 3 * 100 : 0) + "%";
   $('#back').hidden = !BACK[id];
   document.querySelectorAll('.screen').forEach(el => el.scrollTop = 0);
   RENDER[id]();
@@ -827,57 +807,16 @@ function renderBar() {
   const mk = (label, fn, cls = "btn", dis = false) => { const b = document.createElement('button'); b.className = cls; b.textContent = label; b.disabled = dis; b.addEventListener('click', fn); bar.appendChild(b); return b; };
   const st = S.step;
   if (st === "s-setup") mk(S.role && S.scene ? `进入 · ${ROLES[S.role].label} · ${SCENES[S.scene].label}` : S.role ? "再选一个场合" : S.scene ? "再选一个身份" : "先选身份和场合", finishSetup, "btn", !(S.role && S.scene));
-  if (st === "s-home") mk(`以${ROLES[S.role].label}身份开始`, () => go("s-words"));
-  if (st === "s-words") { mk("不认识", () => rate(false), "btn ghost"); mk("认识", () => rate(true)); }
-  if (st === "s-quiz") mk(S.qi < QUIZ.length - 1 ? "下一题" : "进入场景", nextQ, "btn", !S.answered);
+  if (st === "s-home") mk(`以${ROLES[S.role].label}身份开始`, () => go("s-chat"));
   if (st === "s-chat") mk("查看结果", () => go("s-done"), "btn", S.di < DIALOG.length);
-  if (st === "s-done") { mk("回首页", () => reset("s-menu"), "btn ghost"); mk("再来一次", () => reset("s-words")); }
+  if (st === "s-done") { mk("回首页", () => reset("s-menu"), "btn ghost"); mk("再来一次", () => reset("s-chat")); }
   if (st === "s-daily") { const d = dailyState(), today = d.log[todayKey()]; mk(today && today.done ? "今天已打卡 · 再练一遍" : "开始今日打卡", startDaily, today && today.done ? "btn ghost" : "btn"); }
   if (st === "s-dword") { mk("不认识", () => dRate(0), "btn ghost"); mk("模糊", () => dRate(1), "btn ghost"); mk("认识", () => dRate(2)); }
   if (st === "s-dquiz") mk(D.qi < D.quiz.length - 1 ? "下一题" : "完成打卡", nextDQ, "btn", !D.answered);
   if (st === "s-ddone") { mk("回首页", () => go("s-menu"), "btn ghost"); mk("打卡页", () => go("s-daily")); }
 }
 
-/* ================= WORDS ================= */
 function speak(t) { try { const u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; u.rate = .9; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch {} }
-function renderWord() {
-  const w = WORDS[S.wi];
-  $('#deck').innerHTML = `<div class="wcard">
-    <div class="cat">${esc(w.cat)} · ${S.wi + 1} / ${WORDS.length}</div>
-    <div class="w">${esc(w.w)}</div>
-    <div><span class="ipa">${esc(w.ipa)}</span><button class="say" id="say">朗读</button></div>
-    <div class="zh">${esc(w.zh)}</div>
-    <div class="def">${esc(w.def)}</div>
-    <div class="ex">${esc(w.ex)}<small>${esc(w.exzh)}</small></div>
-    <div class="hook">记法 · ${w.hook}</div>
-  </div>`;
-  $('#say').addEventListener('click', () => speak(w.w.replace(/\(.*?\)/g, '') + ". " + w.ex));
-  $('#dots').innerHTML = WORDS.map((x, i) => `<i class="${i === S.wi ? 'on' : S.known[x.id] === true ? 'ok' : S.known[x.id] === false ? 'no' : ''}"></i>`).join('');
-}
-function rate(known) {
-  S.known[WORDS[S.wi].id] = known;
-  if (S.wi < WORDS.length - 1) { S.wi++; renderWord(); } else go("s-quiz");
-}
-
-/* ================= QUIZ ================= */
-function renderQuiz() {
-  const q = QUIZ[S.qi]; S.answered = false;
-  $('#quiz').innerHTML = `<div class="q">
-    <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px">Q${S.qi + 1} / ${QUIZ.length}</div>
-    <p class="stem">${q.stem}</p><div class="hint">${esc(q.hint)}</div>
-    <div class="opts">${q.opts.map((o, i) => `<button class="opt" data-i="${i}"><span class="k">${"ABC"[i]}</span>${esc(o)}</button>`).join('')}</div>
-    <div class="fb" id="fb"></div></div>`;
-  document.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
-    if (S.answered) return; S.answered = true;
-    const i = +b.dataset.i, right = i === q.ans; if (right) S.quizRight++;
-    document.querySelectorAll('.opt').forEach(x => { x.disabled = true; if (+x.dataset.i === q.ans) x.classList.add('right'); });
-    if (!right) b.classList.add('wrong');
-    const fb = $('#fb'); fb.className = "fb on"; fb.innerHTML = (right ? "正确。" : "不对。") + esc(q.fb);
-    renderBar();
-  }));
-  renderBar();
-}
-function nextQ() { if (S.qi < QUIZ.length - 1) { S.qi++; renderQuiz(); } else go("s-chat"); }
 
 /* ================= CHAT ================= */
 function scrollChat() { const s = $('#s-chat'); s.scrollTop = s.scrollHeight; }
@@ -910,7 +849,7 @@ function renderChoices() {
 function pick(i) {
   const d = DIALOG[S.di], o = d.opts[i];
   $('#choices').innerHTML = "";
-  meSays(o.t); S.chatScore += o.s;
+  meSays(o.t); S.chatScore += o.s; if (o.s === 2) S.best++;
   tip(o.fb + (o.s < 2 ? `<br><span style="color:var(--muted)">更好的说法：</span>“${esc(d.opts.find(x => x.s === 2).t)}”` : ""), o.s);
   if (o.s >= 1) $(`#goalbar [data-g="${d.goal}"]`).classList.add('done');
   S.di++;
@@ -1034,26 +973,24 @@ function countUp(el, to, ms = 700) {
 
 /* ================= RESULT ================= */
 function renderDone() {
-  const known = WORDS.filter(w => S.known[w.id]).length;
-  const score = Math.round(known / 5 * 30 + S.quizRight / 3 * 30 + S.chatScore / 8 * 40);
+  const score = Math.round(S.chatScore / 8 * 100);
   countUp($('#scoreNum'), score);
   $('#stars').textContent = score >= 85 ? "优秀" : score >= 60 ? "良好" : "再练一次";
-  $('#stWords').textContent = `${known}/5`; $('#stQuiz').textContent = `${S.quizRight}/3`; $('#stChat').textContent = `${S.chatScore}/8`;
+  $('#stChat').textContent = `${S.chatScore}/8`; $('#stGoals').textContent = `${document.querySelectorAll('#goalbar span.done').length}/4`; $('#stBest').textContent = `${S.best}/4`;
   const main = CAST[SCENES[S.scene].main];
   $('#noteTitle').textContent = `${main.name} 的评语`;
   $('#noteAvatar').className = `avatar ${main.cls}`; $('#noteAvatar').textContent = main.ini;
   $('#samNote').textContent = S.chatScore >= 7 ? T.notes.hi : S.chatScore >= 4 ? T.notes.mid : T.notes.low;
-  $('#wordsDone').innerHTML = WORDS.map(w => `<div class="wl"><div><b>${esc(w.w)}</b> <small>${esc(w.zh)}</small></div><span class="st ${S.known[w.id] ? 'ok' : 're'}">${S.known[w.id] ? '已掌握' : '需复习'}</span></div>`).join('');
   let done = {}; try { done = JSON.parse(store.get('rt.done') || '{}'); } catch {}
   done[`${S.role}:${S.scene}`] = score; store.set('rt.done', JSON.stringify(done));
   $('#combos').innerHTML = Object.keys(ROLES).flatMap(r => Object.keys(SCENES).map(s => {
     const k = `${r}:${s}`, cur = k === `${S.role}:${S.scene}`;
     return `<div class="combo ${done[k] != null ? 'done' : ''} ${cur ? 'cur' : ''}" data-k="${k}">${esc(ROLES[r].label)}<br>${esc(SCENES[s].label)}${done[k] != null ? `<br>${done[k]} 分` : ''}</div>`;
   })).join('');
-  document.querySelectorAll('.combo').forEach(c => c.addEventListener('click', () => { const [r, s] = c.dataset.k.split(':'); S.role = r; S.scene = s; reset("s-words"); }));
+  document.querySelectorAll('.combo').forEach(c => c.addEventListener('click', () => { const [r, s] = c.dataset.k.split(':'); S.role = r; S.scene = s; reset("s-chat"); }));
 }
 function reset(to) {
-  Object.assign(S, { wi: 0, known: {}, qi: 0, quizRight: 0, di: 0, chatScore: 0, answered: false });
+  Object.assign(S, { di: 0, chatScore: 0, best: 0 });
   $('#chat').innerHTML = ""; $('#choices').innerHTML = "";
   loadTask();
   go(to);
