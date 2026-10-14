@@ -287,8 +287,8 @@
     <div class="eyebrow">TODAY</div>
     <h1>今天练什么？</h1>
     <div class="entries">
-      <button class="entry" id="goMission"><div><b>场景练习</b><small id="missionSub"></small></div><span class="arrow">→</span></button>
-      <button class="entry" id="goDaily"><div><b>背单词 · 每日打卡</b><small id="dailySub"></small></div><span class="arrow">→</span></button>
+      <button class="entry" id="goMission"><b>场景练习</b><span class="arrow">→</span></button>
+      <button class="entry" id="goDaily"><b>背单词 · 每日打卡</b><span class="arrow">→</span></button>
     </div>
     <h2>我的进度</h2>
     <div class="mini">
@@ -798,10 +798,7 @@ function renderMenu() {
   $('#menuWho').textContent = `${R.you.name} · ${R.label}`;
   $('#menuScene').textContent = SC.title + ' · ' + SC.cast.map(id => CAST[id].name).join(' & ');
   let done = {}; try { done = JSON.parse(store.get('rt.done') || '{}'); } catch {}
-  const score = done[`${S.role}:${S.scene}`];
-  $('#missionSub').innerHTML = `任务一 · 机械臂停机了 · ${esc(SC.label)}` + (score != null ? `<span class="badge">上次 ${score} 分</span>` : ` · 约 6 分钟`);
   const d = dailyState(), key = todayKey(), today = d.log[key], n = streak(d);
-  $('#dailySub').innerHTML = (today && today.done) ? `今日已打卡 · 连续 ${n} 天` : `今日 5 词待打卡` + (n ? ` · 已连续 ${n} 天` : '');
   $('#mStreak').textContent = n; $('#mWords').textContent = Object.keys(d.srs).length; $('#mCombos').textContent = `${Object.keys(done).length}/9`;
   const t = new Date(); $('#menuFoot').textContent = `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 周${"日一二三四五六"[t.getDay()]}`;
 }
