@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1319" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="机器人英语学习：任务练习 + 每日单词打卡">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<title>RoboTutor 任务一</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one phone-width column (max 430px) centered on wide screens; each step is a full "screen" with a fixed bottom action bar. */
+  :root {
+    --bg: #eef1f5; --card: #ffffff; --ink: #141a24; --muted: #5f6b7a; --line: #dde3ea;
+    --accent: #0f766e; --accent-ink: #ffffff; --accent-soft: #d9f0ec;
+    --sam: #0f766e; --priya: #6d28d9; --tanaka: #1d4ed8; --you: #b45309; --good: #15803d; --warn: #b45309; --bad: #b91c1c;
+    --bubble: #ffffff; --bubble-you: #0f766e; --bubble-you-ink: #ffffff; --stage: #fff7e6;
+    --display: "Lexend", -apple-system, "PingFang SC", "Noto Sans SC", sans-serif;
+    --body: -apple-system, "PingFang SC", "Helvetica Neue", "Noto Sans SC", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1319; --card: #171e27; --ink: #e8edf3; --muted: #94a1b2; --line: #28323e;
+      --accent: #2dd4bf; --accent-ink: #06211e; --accent-soft: #163b36;
+      --sam: #2dd4bf; --priya: #a78bfa; --tanaka: #93c5fd; --you: #fbbf24; --good: #4ade80; --warn: #fbbf24; --bad: #f87171;
+      --bubble: #1f2832; --bubble-you: #2dd4bf; --bubble-you-ink: #06211e; --stage: #2a2416; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1319; --card: #171e27; --ink: #e8edf3; --muted: #94a1b2; --line: #28323e;
+    --accent: #2dd4bf; --accent-ink: #06211e; --accent-soft: #163b36;
+    --sam: #2dd4bf; --priya: #a78bfa; --tanaka: #93c5fd; --you: #fbbf24; --good: #4ade80; --warn: #fbbf24; --bad: #f87171;
+    --bubble: #1f2832; --bubble-you: #2dd4bf; --bubble-you-ink: #06211e; --stage: #2a2416; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); }
+  .phone { max-width: 430px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; background: var(--bg); position: relative; }
+  @media (min-width: 600px) { .phone { min-height: 0; height: min(860px, 100vh); margin-block: max(0px, calc((100vh - 860px) / 2)); border: 1px solid var(--line); border-radius: 36px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,.18); } }
+
+  .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 3; display: flex; align-items: center; gap: 10px; padding: 12px 16px 8px; background: var(--bg); }
+  .top .back { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 18px; cursor: pointer; }
+  .top .back[hidden] { display: none; }
+  .top .ttl { font-family: var(--display); font-weight: 600; font-size: 15px; }
+  .top .step { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .progress { height: 4px; background: var(--line); margin: 0 16px 4px; border-radius: 2px; overflow: hidden; }
+  .progress i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .4s; }
+
+  .screen { flex: 1; overflow-y: auto; padding: 8px 16px 110px; display: none; min-width: 0; }
+  .screen.on { display: block; }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, var(--bg) 70%, transparent); display: flex; gap: 10px; }
+  @media (max-width: 599px) { .bar { position: fixed; max-width: 430px; margin: 0 auto; } }
+  .btn { flex: 1; border: 0; border-radius: 14px; padding: 14px; font: 600 16px var(--display); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  .btn.ghost { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  h1 { font: 700 26px/1.2 var(--display); margin: 8px 0 4px; text-wrap: balance; }
+  h2 { font: 600 13px var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 22px 0 10px; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .lead { color: var(--muted); margin: 0 0 14px; }
+
+  .picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pick { border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 16px; padding: 12px 6px 10px; text-align: center; cursor: pointer; font: inherit; display: grid; gap: 2px; justify-items: center; }
+  .pick .ic { font-size: 22px; }
+  .pick b { font-family: var(--display); font-weight: 600; font-size: 14px; }
+  .pick small { color: var(--muted); font-size: 11px; line-height: 1.3; }
+  .pick.on { border-color: var(--accent); background: var(--accent-soft); }
+
+  .task { background: var(--card); border-radius: 20px; padding: 18px; border: 1px solid var(--line); margin-top: 14px; }
+  .task .tt { font-family: var(--display); font-weight: 600; font-size: 16px; }
+  .task .setting { color: var(--muted); font-size: 13px; margin: 4px 0 10px; }
+  .task .meta { display: flex; gap: 14px; margin-top: 12px; font-family: var(--mono); font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+  .task .goals { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .task .goals li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+  .task .goals li::before { content: ""; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--accent); flex: none; margin-top: 2px; }
+
+  .cast { display: grid; gap: 10px; }
+  .person { display: flex; gap: 12px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
+  .person.locked { opacity: .55; }
+  .avatar { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font: 700 18px var(--display); color: #fff; flex: none; }
+  .avatar.sam { background: var(--sam); } .avatar.priya { background: var(--priya); } .avatar.tanaka { background: var(--tanaka); } .avatar.you { background: var(--you); } .avatar.grey { background: #7b8794; }
+  .person b { font-family: var(--display); font-weight: 600; display: block; }
+  .person small { color: var(--muted); font-size: 13px; display: block; }
+  .person .role { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+
+  /* word cards */
+  .deck { position: relative; min-height: 380px; }
+  .wcard { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 26px 22px 22px; box-shadow: 0 12px 30px rgba(0,0,0,.08); }
+  .wcard .cat { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .wcard .w { font: 700 30px/1.1 var(--display); margin: 8px 0 2px; word-break: break-word; }
+  .wcard .ipa { font-family: var(--mono); font-size: 14px; color: var(--muted); }
+  .wcard .say { margin-left: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px; padding: 3px 10px; font-size: 13px; cursor: pointer; }
+  .wcard .zh { font-size: 20px; font-weight: 600; color: var(--accent); margin: 14px 0 8px; }
+  .wcard .def { color: var(--muted); font-size: 14px; }
+  .wcard .ex { margin-top: 14px; padding: 12px 14px; background: var(--bg); border-radius: 14px; font-size: 15px; border-left: 3px solid var(--accent); }
+  .wcard .ex small { display: block; color: var(--muted); margin-top: 4px; font-size: 13px; }
+  .wcard .hook { margin-top: 12px; font-size: 13px; color: var(--muted); }
+  .wcard .hook b { color: var(--ink); }
+  .dots { display: flex; gap: 6px; justify-content: center; margin: 14px 0 0; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+  .dots i.on { background: var(--accent); width: 20px; border-radius: 4px; }
+  .dots i.ok { background: var(--good); }
+  .dots i.no { background: var(--bad); }
+
+  /* quiz */
+  .q { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; }
+  .q .stem { font-size: 17px; font-weight: 600; margin: 0 0 4px; }
+  .q .stem code { font-family: var(--mono); background: var(--accent-soft); color: var(--accent); padding: 0 6px; border-radius: 6px; }
+  .q .hint { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .opts { display: grid; gap: 10px; }
+  .opt { text-align: left; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 14px; padding: 13px 14px; font: 500 15px var(--body); cursor: pointer; display: flex; gap: 10px; align-items: center; }
+  .opt .k { font-family: var(--mono); font-size: 12px; color: var(--muted); width: 18px; }
+  .opt.right { border-color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--bg)); }
+  .opt.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, var(--bg)); }
+  .opt:disabled { cursor: default; }
+  .fb { margin-top: 12px; padding: 12px 14px; border-radius: 12px; font-size: 14px; background: var(--accent-soft); display: none; }
+  .fb.on { display: block; }
+
+  /* chat */
+  .chat { display: flex; flex-direction: column; gap: 10px; }
+  .row { display: flex; gap: 8px; align-items: flex-end; }
+  .row.me { flex-direction: row-reverse; }
+  .row .avatar { width: 30px; height: 30px; font-size: 13px; }
+  .row .who { font-family: var(--mono); font-size: 10px; color: var(--muted); margin: 0 0 2px 4px; }
+  .bub { max-width: 82%; padding: 10px 14px; border-radius: 18px; background: var(--bubble); border: 1px solid var(--line); font-size: 15px; border-bottom-left-radius: 6px; }
+  .row.me .bub { background: var(--bubble-you); color: var(--bubble-you-ink); border-color: transparent; border-bottom-right-radius: 6px; border-bottom-left-radius: 18px; }
+  .stagecard { align-self: stretch; background: var(--stage); border: 1px dashed var(--warn); border-radius: 14px; padding: 10px 14px; font-size: 14px; }
+  .tip { align-self: center; max-width: 92%; font-size: 13px; padding: 8px 12px; border-radius: 12px; background: var(--accent-soft); color: var(--ink); }
+  .tip.lvl0 { background: color-mix(in srgb, var(--bad) 14%, var(--card)); }
+  .tip.lvl1 { background: color-mix(in srgb, var(--warn) 16%, var(--card)); }
+  .typing { display: inline-flex; gap: 4px; padding: 12px 14px; }
+  .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1s infinite; }
+  .typing i:nth-child(2) { animation-delay: .2s; } .typing i:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%, 60%, 100% { opacity: .3 } 30% { opacity: 1 } }
+  .choices { margin-top: 14px; display: grid; gap: 8px; }
+  .choices .lbl { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .choice { text-align: left; border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 14px; padding: 12px 14px; font: 15px var(--body); cursor: pointer; }
+  .choice:disabled { opacity: .5; cursor: default; }
+  .goalbar { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 12px; }
+  .goalbar span { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--muted); }
+  .goalbar span.done { border-color: var(--good); color: var(--good); }
+
+  /* result */
+  .score { text-align: center; padding: 20px 0 6px; }
+  .score .big { font: 700 56px/1 var(--display); font-variant-numeric: tabular-nums; }
+  .score .stars { font-size: 26px; letter-spacing: 4px; margin-top: 4px; color: var(--warn); }
+  .score .sub { color: var(--muted); font-size: 13px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; text-align: center; }
+  .stat b { font: 600 20px var(--display); display: block; font-variant-numeric: tabular-nums; }
+  .stat small { color: var(--muted); font-size: 12px; }
+  .words { display: grid; gap: 8px; }
+  .wl { display: flex; justify-content: space-between; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; gap: 8px; }
+  .wl b { font-family: var(--display); font-weight: 600; }
+  .wl small { color: var(--muted); }
+  .wl .st { font-size: 12px; border-radius: 999px; padding: 2px 8px; flex: none; }
+  .wl .st.ok { background: color-mix(in srgb, var(--good) 15%, var(--card)); color: var(--good); }
+  .wl .st.re { background: color-mix(in srgb, var(--warn) 18%, var(--card)); color: var(--warn); }
+  .note { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; gap: 12px; }
+  .note p { margin: 0; font-size: 14px; }
+  .combos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .combo { font-size: 11px; text-align: center; border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px; color: var(--muted); background: var(--card); cursor: pointer; }
+  .combo.done { border-color: var(--good); color: var(--good); }
+  .combo.cur { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  /* mode tabs + daily check-in */
+  .tabs { display: flex; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 4px; margin: 6px 0 14px; }
+  .tabs button { flex: 1; border: 0; background: transparent; color: var(--muted); border-radius: 10px; padding: 9px; font: 600 14px var(--display); cursor: pointer; }
+  .tabs button.on { background: var(--accent); color: var(--accent-ink); }
+  .streak { display: flex; align-items: center; gap: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px 18px; }
+  .streak .n { font: 700 44px/1 var(--display); font-variant-numeric: tabular-nums; }
+  .streak .l { color: var(--muted); font-size: 13px; }
+  .streak .r { margin-left: auto; text-align: right; font-size: 13px; color: var(--muted); }
+  .streak .r b { display: block; font: 600 18px var(--display); color: var(--ink); }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .cal div { aspect-ratio: 1; border-radius: 10px; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; color: var(--muted); background: var(--card); border: 1px solid var(--line); }
+  .cal div.done { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .cal div.today { border: 2px solid var(--accent); color: var(--accent); font-weight: 600; }
+  .cal div.today.done { color: var(--accent-ink); }
+  .cal div.future { opacity: .35; }
+  .dw { display: flex; justify-content: space-between; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; gap: 8px; }
+  .dw b { font-family: var(--display); font-weight: 600; }
+  .dw small { color: var(--muted); }
+  .dw .st { font-size: 11px; border-radius: 999px; padding: 2px 8px; flex: none; font-family: var(--mono); }
+  .dw .st.new { background: var(--accent-soft); color: var(--accent); }
+  .dw .st.rev { background: color-mix(in srgb, var(--warn) 18%, var(--card)); color: var(--warn); }
+  .dw .st.ok { background: color-mix(in srgb, var(--good) 15%, var(--card)); color: var(--good); }
+  .flipcard { cursor: pointer; }
+  .flipcard .back { display: none; }
+  .flipcard.flipped .back { display: block; }
+  .flipcard.flipped .front-hint { display: none; }
+  .flipcard .front-hint { color: var(--muted); font-size: 13px; margin-top: 18px; text-align: center; }
+  .done-hero { text-align: center; padding: 24px 0 8px; }
+  .done-hero .big { font-size: 56px; }
+  .done-hero h1 { margin: 6px 0 2px; }
+  .done-hero p { color: var(--muted); margin: 0; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="phone">
+  <div class="top">
+    <button class="back" id="back" aria-label="返回" hidden>‹</button>
+    <span class="ttl" id="ttl">RoboTutor</span>
+    <span class="step" id="stepLbl"></span>
+  </div>
+  <div class="progress"><i id="prog"></i></div>
+
+  <!-- 0 HOME -->
+  <section class="screen on" id="s-home">
+    <div class="tabs"><button class="on" id="tabMission">🎯 任务练习</button><button id="tabDaily">📅 每日打卡</button></div>
+    <div class="eyebrow">MISSION 01</div>
+    <h1>机械臂停机了</h1>
+    <p class="lead">The arm stopped. 测试中机械臂突然停下，周四有客户演示，周五是里程碑验收。同一件事，不同身份、不同场合，要说的英语完全不同。</p>
+
+    <h2>你的身份</h2>
+    <div class="picker" id="roles">
+      <button class="pick" data-r="engineer"><span class="ic">🔧</span><b>工程师</b><small>排查并汇报故障</small></button>
+      <button class="pick" data-r="pm"><span class="ic">🧭</span><b>产品经理</b><small>评估影响、找方案</small></button>
+      <button class="pick" data-r="pjm"><span class="ic">📅</span><b>项目经理</b><small>工期、风险、沟通</small></button>
+    </div>
+
+    <h2>场景</h2>
+    <div class="picker" id="scenes">
+      <button class="pick" data-s="one_on_one"><span class="ic">💬</span><b>一对一</b><small>实验室里和 Sam 谈</small></button>
+      <button class="pick" data-s="meeting"><span class="ic">🧑‍🤝‍🧑</span><b>团队会议</b><small>周一例会上发言</small></button>
+      <button class="pick" data-s="presentation"><span class="ic">🎤</span><b>客户演示</b><small>向 Mr. Tanaka 汇报</small></button>
+    </div>
+
+    <div class="task">
+      <div class="tt" id="taskTitle"></div>
+      <div class="setting" id="taskSetting"></div>
+      <ul class="goals" id="goals"></ul>
+      <div class="meta"><span>⏱ 约 6 分钟</span><span>📚 5 words</span><span>💬 4 turns</span></div>
+    </div>
+
+    <h2>人物</h2>
+    <div class="cast" id="cast"></div>
+  </section>
+
+  <!-- 1 WORDS -->
+  <section class="screen" id="s-words">
+    <div class="eyebrow">STEP 1 · 学词</div>
+    <h1 id="wordsTitle"></h1>
+    <p class="lead">看一张卡，判断自己认不认识。不认识的词会在最后标记为需要复习。</p>
+    <div class="deck" id="deck"></div>
+    <div class="dots" id="dots"></div>
+  </section>
+
+  <!-- 2 QUIZ -->
+  <section class="screen" id="s-quiz">
+    <div class="eyebrow">STEP 2 · 快测</div>
+    <h1>三道题</h1>
+    <p class="lead">选出正确的词。选完立即给出讲解。</p>
+    <div id="quiz"></div>
+  </section>
+
+  <!-- 3 CHAT -->
+  <section class="screen" id="s-chat">
+    <div class="eyebrow" id="chatEyebrow">STEP 3 · 场景对话</div>
+    <h1 id="chatTitle"></h1>
+    <p class="lead" id="chatLead"></p>
+    <div class="goalbar" id="goalbar"></div>
+    <div class="chat" id="chat"></div>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <!-- 4 RESULT -->
+  <section class="screen" id="s-done">
+    <div class="eyebrow" id="doneEyebrow">MISSION 01 · 完成</div>
+    <div class="score">
+      <div class="big" id="scoreNum">0</div>
+      <div class="sub">/ 100</div>
+      <div class="stars" id="stars"></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="stWords">0/5</b><small>认识的词</small></div>
+      <div class="stat"><b id="stQuiz">0/3</b><small>快测正确</small></div>
+      <div class="stat"><b id="stChat">0/8</b><small>对话得分</small></div>
+    </div>
+    <h2 id="noteTitle">评语</h2>
+    <div class="note"><div class="avatar" id="noteAvatar">S</div><p id="samNote"></p></div>
+    <h2>本次单词</h2>
+    <div class="words" id="wordsDone"></div>
+    <h2>同一事件 · 9 种练法</h2>
+    <div class="combos" id="combos"></div>
+  </section>
+
+  <!-- 5 DAILY HUB -->
+  <section class="screen" id="s-daily">
+    <div class="tabs"><button id="tabMission2">🎯 任务练习</button><button class="on">📅 每日打卡</button></div>
+    <div class="eyebrow" id="dailyDate"></div>
+    <h1>每日单词打卡</h1>
+    <p class="lead">每天 5 个词：先复习到期的，再补新词。翻卡自评，再做 5 道小测，就算打卡成功。</p>
+    <div class="streak">
+      <div><div class="n" id="streakN">0</div><div class="l">连续打卡天数</div></div>
+      <div class="r"><b id="masteredN">0</b>已掌握<br><b id="learnedN">0</b>学过</div>
+    </div>
+    <h2>最近两周</h2>
+    <div class="cal" id="cal"></div>
+    <h2 id="todayTitle">今日 5 词</h2>
+    <div class="words" id="todayList"></div>
+  </section>
+
+  <!-- 6 DAILY FLASHCARDS -->
+  <section class="screen" id="s-dword">
+    <div class="eyebrow">打卡 · 第 1 步 · 翻卡自评</div>
+    <h1 id="dwordTitle">今日单词</h1>
+    <p class="lead">先想中文意思，点卡片翻面核对，再诚实地选一个。你的选择决定这个词下次什么时候再出现。</p>
+    <div class="deck" id="ddeck"></div>
+    <div class="dots" id="ddots"></div>
+  </section>
+
+  <!-- 7 DAILY QUIZ -->
+  <section class="screen" id="s-dquiz">
+    <div class="eyebrow">打卡 · 第 2 步 · 小测</div>
+    <h1>五道题</h1>
+    <p class="lead">刚学的 5 个词，换个方向考一遍。</p>
+    <div id="dquiz"></div>
+  </section>
+
+  <!-- 8 DAILY DONE -->
+  <section class="screen" id="s-ddone">
+    <div class="done-hero"><div class="big">✅</div><h1>今日打卡成功</h1><p id="ddoneSub"></p></div>
+    <div class="streak" style="margin-top:14px">
+      <div><div class="n" id="streakN2">0</div><div class="l">连续打卡天数</div></div>
+      <div class="r"><b id="dquizScore">0/5</b>小测<br><b id="dueTomorrow">0</b>明天到期</div>
+    </div>
+    <h2>今日单词</h2>
+    <div class="words" id="ddoneList"></div>
+    <p class="lead" style="margin-top:16px;font-size:13px">记得的词会隔 1 → 2 → 4 → 7 → 15 → 30 天再出现；不记得的明天再来。连续 6 次记得就算掌握。</p>
+  </section>
+
+  <div class="bar" id="bar"></div>
+</div>
+
+<script>
+/* ================= CAST & SCENES ================= */
+const CAST = {
+  sam:    {ini:"S", cls:"sam",    name:"Sam",        role:"高级机器人工程师", desc:"负责排查这次故障。直接、务实，喜欢先问“能不能复现”。听不懂含糊的描述，也不喜欢被催。"},
+  priya:  {ini:"P", cls:"priya",  name:"Priya",      role:"团队负责人 · 例会主持", desc:"每周一主持例会。喜欢三句话以内的汇报，每个议题结束时一定要有 owner 和时间。细节会让她打断你。"},
+  tanaka: {ini:"T", cls:"tanaka", name:"Mr. Tanaka", role:"客户工厂厂长", desc:"关心安全、产线节拍和验收日期，对机器人半信半疑。讨厌 “don't worry”，尊重坦诚和数据。"}
+};
+const SCENES = {
+  one_on_one:   {label:"一对一",  title:"实验室一对一",  cast:["sam"],          main:"sam",
+                 setting:"实验室里，Sam 走过来问你机械臂的事。没有旁人，可以讲细节，但要讲清楚。"},
+  meeting:      {label:"团队会议", title:"周一团队例会",  cast:["priya","sam"],  main:"priya",
+                 setting:"周一例会，Priya 主持，Sam 和其他五个人在场。每个议题只有两三分钟，细节要 take offline。"},
+  presentation: {label:"客户演示", title:"周四客户演示",  cast:["tanaka"],       main:"tanaka",
+                 setting:"周四，客户厂长 Mr. Tanaka 带着两位工程师来看演示。机械臂的问题还没彻底解决，你站在前面讲。"}
+};
+const ROLES = {
+  engineer: {label:"工程师",   you:{ini:"L", name:"Lin", desc:"入职两周的初级工程师。技术过硬，但用英语汇报时容易说得太笼统、太细。"}},
+  pm:       {label:"产品经理", you:{ini:"M", name:"Mia", desc:"这款机械臂的产品经理。要搞清影响、拿到方案，不替工程师做技术决定，也不替销售乱承诺。"}},
+  pjm:      {label:"项目经理", you:{ini:"W", name:"Wei", desc:"这个客户项目的项目经理。周五是里程碑验收，要拿到时间、识别风险、决定怎么对外沟通。"}}
+};
+
+/* ================= WORD BANK ================= */
+const W = {
+joint:{w:"joint",ipa:"/dʒɔɪnt/",cat:"HARDWARE · n.",zh:"关节",def:"A connection between two links of a robot that allows rotation.",ex:"Joint three is hitting its limit at 120 degrees.",exzh:"三号关节在 120 度时到达了极限位置。",hook:"汇报时按编号说：<b>joint one / two / three</b>，Sam 一听就知道是哪里。"},
+encoder:{w:"encoder",ipa:"/ɪnˈkəʊdə/",cat:"SENSING · n.",zh:"编码器",def:"A sensor that measures how far a motor shaft has rotated.",ex:"If the encoder loses counts, the arm thinks it's somewhere it isn't.",exzh:"如果编码器丢脉冲，机械臂就会以为自己在别的位置。",hook:"常见搭配：<b>lose counts</b>（丢脉冲）、<b>encoder data</b>。"},
+torque:{w:"torque",ipa:"/tɔːk/",cat:"HARDWARE · n.",zh:"扭矩",def:"The rotational force a motor can apply.",ex:"The motor stalls because it doesn't have enough torque for that load.",exzh:"电机堵转了，因为它的扭矩不足以带动这个负载。",hook:"发音像 <b>talk</b> 去掉 l，别读成 tor-kyu。"},
+log:{w:"log",ipa:"/lɒɡ/",cat:"SOFTWARE · n./v.",zh:"日志",def:"Recorded messages from a running system, used for debugging.",ex:"Pull the logs and look for the error right before it stopped.",exzh:"把日志拉下来，看看它停下前的那条报错。",hook:"动词短语：<b>pull the logs</b>（把日志拉下来）、<b>check the logs</b>。"},
+reproduce:{w:"reproduce",ipa:"/ˌriːprəˈdjuːs/",cat:"ENGINEERING · v.",zh:"复现（故障）",def:"To make a failure happen again on purpose so it can be studied.",ex:"I can't reproduce the crash on the bench.",exzh:"我在实验台上复现不了那个崩溃。",hook:"Sam 的口头禅：<b>Can you reproduce it?</b> 排查的第一个问题永远是这个。"},
+impact:{w:"impact",ipa:"/ˈɪmpækt/",cat:"PRODUCT · n.",zh:"影响（范围）",def:"The effect a problem has on users, the demo, or the schedule.",ex:"What's the impact on Thursday's demo?",exzh:"这对周四的演示有什么影响？",hook:"产品经理开口第一句：<b>What's the impact?</b> 先问影响，再问原因。"},
+root_cause:{w:"root cause",ipa:"/ruːt kɔːz/",cat:"ENGINEERING · n.",zh:"根本原因",def:"The underlying reason a failure happened, as opposed to its symptoms.",ex:"We don't know the root cause yet, but we have a workaround.",exzh:"根本原因还不清楚，但我们有临时方案。",hook:"和 <b>symptom</b>（表象）相对。没找到 root cause 之前，别逼工程师承诺修好时间。"},
+workaround:{w:"workaround",ipa:"/ˈwɜːkəraʊnd/",cat:"ENGINEERING · n.",zh:"临时解决方案",def:"A temporary way to get past a problem without fixing it properly.",ex:"Is there a workaround that keeps the demo path working?",exzh:"有没有能让演示流程照常跑的临时方案？",hook:"问 workaround 是在问“能不能先绕过去”，不是在要求马上修好。"},
+blocker:{w:"blocker",ipa:"/ˈblɒkə/",cat:"PRODUCT · n.",zh:"阻碍项；卡点",def:"An issue that stops a release, a demo or a task from going ahead.",ex:"If the customer needs the full range, this becomes a blocker.",exzh:"如果客户需要完整行程，这就成了卡点。",hook:"常见说法：<b>flag it as a blocker</b>、<b>Is it a blocker for Thursday?</b>"},
+trade_off:{w:"trade-off",ipa:"/ˈtreɪd ɒf/",cat:"PRODUCT · n.",zh:"权衡；取舍",def:"Accepting a downside in one area to gain an advantage in another.",ex:"Limiting the joint to 100 degrees is a reasonable trade-off for the demo.",exzh:"为了演示把关节限制在 100 度，是合理的取舍。",hook:"表达决定时说 <b>That's a reasonable trade-off</b>，比 “OK but it's ugly” 专业得多。"},
+eta:{w:"ETA",ipa:"/ˌiː tiː ˈeɪ/",cat:"PROJECT · n.",zh:"预计完成时间",def:"Estimated time of arrival: when something is expected to be done.",ex:"What's your ETA for the fix?",exzh:"修复的预计完成时间是什么时候？",hook:"比 “when will it be done” 更专业，也更不像催。配搭：<b>a rough ETA</b>。"},
+milestone:{w:"milestone",ipa:"/ˈmaɪlstəʊn/",cat:"PROJECT · n.",zh:"里程碑",def:"A significant checkpoint in a project schedule.",ex:"Does this put the Friday milestone at risk?",exzh:"这会让周五的里程碑有风险吗？",hook:"固定搭配：<b>hit / miss a milestone</b>，<b>put the milestone at risk</b>。"},
+lead_time:{w:"lead time",ipa:"/liːd taɪm/",cat:"BUSINESS · n.",zh:"交货周期",def:"The time between ordering a part and receiving it.",ex:"The encoder has a two-week lead time.",exzh:"这款编码器的交货周期是两周。",hook:"项目经理最怕的词。听到 lead time 长，第一反应是 <b>order it now as a hedge</b>。"},
+risk:{w:"risk",ipa:"/rɪsk/",cat:"PROJECT · n.",zh:"风险",def:"Something that might happen and hurt the schedule, cost or quality.",ex:"I'll log it as a risk with tomorrow afternoon as the decision point.",exzh:"我把它记成一项风险，决策点定在明天下午。",hook:"动词搭配：<b>log / flag / mitigate a risk</b>。风险要有 decision point。"},
+escalate:{w:"escalate",ipa:"/ˈeskəleɪt/",cat:"PROJECT · v.",zh:"上报；升级处理",def:"To raise an issue to a higher level of management or to the customer.",ex:"If it slips, I'll escalate to their director with a revised plan.",exzh:"如果延期，我会带着修订计划上报给他们的总监。",hook:"escalate 不是告状，是带着方案升级沟通。永远 <b>escalate with a plan</b>。"},
+take_offline:{w:"take it offline",ipa:"/teɪk ɪt ˈɒflaɪn/",cat:"MEETING · phr.",zh:"会后单独聊",def:"To move a detailed discussion out of the meeting so it doesn't hold everyone up.",ex:"Let's take the details offline after this.",exzh:"细节我们会后单独聊。",hook:"会议里被追问细节时的标准回应。既礼貌又保护了大家的时间。"},
+walk_through:{w:"walk (you) through",ipa:"/wɔːk θruː/",cat:"PRESENTING · phr.",zh:"带您过一遍",def:"To explain something step by step to an audience.",ex:"Let me walk you through the test results.",exzh:"我带您过一遍测试结果。",hook:"开场万能句：<b>I'll walk you through A, B and C.</b> 先说结构，听众才跟得上。"},
+known_issue:{w:"known issue",ipa:"/nəʊn ˈɪʃuː/",cat:"PRESENTING · n.",zh:"已知问题",def:"A problem the team already knows about and is tracking.",ex:"One known issue: joint three stalls at 120 degrees under load.",exzh:"一个已知问题：三号关节在负载下 120 度会堵转。",hook:"比 “problem” 听起来更可控：已知、在跟踪、有方案。"},
+mitigation:{w:"mitigation",ipa:"/ˌmɪtɪˈɡeɪʃn/",cat:"ENGINEERING · n.",zh:"缓解措施",def:"An action that reduces the effect of a problem without fully fixing it.",ex:"As a mitigation, we've capped the joint at 100 degrees.",exzh:"作为缓解措施，我们把关节限制在 100 度。",hook:"对客户说 mitigation，对团队说 workaround，意思接近，语气更正式。"},
+repeatability:{w:"repeatability",ipa:"/rɪˌpiːtəˈbɪləti/",cat:"ENGINEERING · n.",zh:"重复精度",def:"How consistently a robot returns to the same position when commanded repeatedly.",ex:"Repeatability is still 0.1 millimeters across the capped range.",exzh:"在限制范围内重复精度仍是 0.1 毫米。",hook:"客户最爱问的指标。回答要带数字和测量时间。"},
+takeaway:{w:"takeaway",ipa:"/ˈteɪkəweɪ/",cat:"PRESENTING · n.",zh:"要点；结论",def:"The key point an audience should remember.",ex:"Two takeaways: the arm meets your cycle time, and the fix lands next Wednesday.",exzh:"两个要点：机械臂满足节拍要求，修复下周三完成。",hook:"收尾句型：<b>The takeaway is…</b> / <b>Two takeaways:</b> 让听众带走结论。"},
+priority:{w:"priority",ipa:"/praɪˈɒrəti/",cat:"PRODUCT · n.",zh:"优先级",def:"What matters most and gets resources first.",ex:"Thursday's demo is the top priority this week.",exzh:"周四的演示是本周最高优先级。",hook:"产品经理在会上的职责：说出 priority，别人才知道什么可以放一放。"},
+scope:{w:"scope",ipa:"/skəʊp/",cat:"PRODUCT · n.",zh:"范围",def:"What is included in a piece of work, and what is not.",ex:"Let's keep the gripper work out of scope this week.",exzh:"这周把夹爪的工作放到范围之外。",hook:"搭配：<b>in / out of scope</b>，<b>scope creep</b>（范围蔓延）。"},
+action_item:{w:"action item",ipa:"/ˈækʃn ˈaɪtəm/",cat:"MEETING · n.",zh:"行动项",def:"A specific task someone agrees to do after a meeting.",ex:"I'll take that as an action item and report back tomorrow.",exzh:"这个我领为行动项，明天回报。",hook:"认领的句式：<b>I'll take that as an action item.</b> 后面一定跟时间。"},
+align:{w:"align",ipa:"/əˈlaɪn/",cat:"MEETING · v.",zh:"对齐（达成一致）",def:"To make sure people agree on the goal or plan.",ex:"I'll align with sales today so we don't over-commit.",exzh:"我今天和销售对齐一下，免得承诺过头。",hook:"<b>align with someone on something</b>。会议结束前常问：Are we aligned?"},
+stakeholder:{w:"stakeholder",ipa:"/ˈsteɪkhəʊldə/",cat:"PRODUCT · n.",zh:"相关方",def:"Anyone who is affected by, or can affect, a decision.",ex:"Sales is a stakeholder here — they're promising the full range.",exzh:"销售是相关方，他们在承诺完整行程。",hook:"产品经理的本能：每个决定先想一遍 <b>who are the stakeholders?</b>"},
+use_case:{w:"use case",ipa:"/juːs keɪs/",cat:"PRODUCT · n.",zh:"使用场景",def:"The specific way a customer will use the product.",ex:"For your packing use case, 100 degrees is enough.",exzh:"对您的包装场景来说，100 度足够了。",hook:"对客户永远从 <b>your use case</b> 讲起，而不是从功能讲起。"},
+roadmap:{w:"roadmap",ipa:"/ˈrəʊdmæp/",cat:"PRODUCT · n.",zh:"路线图",def:"The planned sequence of features and improvements over time.",ex:"The full range is on the roadmap for next month.",exzh:"完整行程在下个月的路线图上。",hook:"<b>on the roadmap</b> 是产品经理的安全说法：计划内，但不是承诺日期。"},
+limitation:{w:"limitation",ipa:"/ˌlɪmɪˈteɪʃn/",cat:"PRODUCT · n.",zh:"限制；局限",def:"Something the product cannot do, or can only do partly.",ex:"One limitation today: the joint is capped at 100 degrees.",exzh:"今天的一个限制：关节被限制在 100 度。",hook:"主动说 limitation 比被客户发现强十倍。"},
+commit:{w:"commit (to)",ipa:"/kəˈmɪt/",cat:"BUSINESS · v.",zh:"承诺",def:"To promise firmly that something will be delivered.",ex:"I can commit to the full range by the end of the month for line one.",exzh:"一号线的完整行程我可以承诺月底完成。",hook:"承诺要带边界：<b>commit to X by Y for Z</b>。没有边界的承诺迟早变成事故。"},
+feedback:{w:"feedback",ipa:"/ˈfiːdbæk/",cat:"PRODUCT · n.",zh:"反馈",def:"Opinions and reactions from users or customers.",ex:"I'd love your feedback on the pick cycle you saw today.",exzh:"很想听听您对今天看到的抓取节拍的反馈。",hook:"要 feedback 要具体：<b>feedback on X</b>，别只说 any feedback?"},
+agenda:{w:"agenda",ipa:"/əˈdʒendə/",cat:"MEETING · n.",zh:"议程",def:"The list of topics a meeting will cover.",ex:"The arm is the first item on today's agenda.",exzh:"机械臂是今天议程的第一项。",hook:"<b>on the agenda</b>、<b>next item</b>、<b>that's the agenda</b>（议程结束）。"},
+on_track:{w:"on track",ipa:"/ɒn træk/",cat:"PROJECT · phr.",zh:"按计划进行",def:"Progressing as planned, likely to meet the deadline.",ex:"We're on track if it's a tuning issue.",exzh:"如果只是调参问题，我们就按计划进行。",hook:"反义是 <b>behind schedule</b> 或 <b>at risk</b>。项目经理的三种状态词。"},
+dependency:{w:"dependency",ipa:"/dɪˈpendənsi/",cat:"PROJECT · n.",zh:"依赖项",def:"Something that must happen before another task can proceed.",ex:"Ordering the encoder is a dependency for Friday.",exzh:"订购编码器是周五的依赖项。",hook:"识别 dependency 是项目经理的核心技能；说出来，大家才会提前动。"},
+owner:{w:"owner",ipa:"/ˈəʊnə/",cat:"MEETING · n.",zh:"负责人",def:"The one person responsible for getting a task done.",ex:"Sam owns the bench test, done by tomorrow 3 pm.",exzh:"Sam 负责台架测试，明天下午三点前完成。",hook:"动词也能用：<b>Sam owns the test.</b> 每个 action item 必须有一个 owner。"},
+deadline:{w:"deadline",ipa:"/ˈdedlaɪn/",cat:"PROJECT · n.",zh:"截止时间",def:"The time by which something must be done.",ex:"Every action item needs an owner and a deadline.",exzh:"每个行动项都要有负责人和截止时间。",hook:"<b>by tomorrow 3 pm</b> 比 <b>soon</b> 值钱一百倍。"},
+timeline:{w:"timeline",ipa:"/ˈtaɪmlaɪn/",cat:"PROJECT · n.",zh:"时间线",def:"The planned sequence of dates for a project.",ex:"Three things today: where we are on the timeline, one risk, and our contingency.",exzh:"今天讲三件事：时间线进展、一个风险、以及我们的应急方案。",hook:"给客户讲进度永远从 timeline 讲起，让对方有坐标。"},
+slip:{w:"slip",ipa:"/slɪp/",cat:"PROJECT · v.",zh:"延期",def:"To move later than planned.",ex:"If it's the encoder, the sign-off slips one week.",exzh:"如果是编码器问题，验收会延期一周。",hook:"<b>slip by a week</b>、<b>the date slipped</b>。比 delay 更像行话。"},
+contingency:{w:"contingency",ipa:"/kənˈtɪndʒənsi/",cat:"PROJECT · n.",zh:"应急方案",def:"A backup plan for if something goes wrong.",ex:"Our contingency is to run the acceptance tests on the capped range.",exzh:"我们的应急方案是在限制范围内跑验收测试。",hook:"客户问 “What if?” 时的答案就是 <b>contingency</b>。没有它就别上台。"},
+sign_off:{w:"sign-off",ipa:"/ˈsaɪn ɒf/",cat:"BUSINESS · n.",zh:"验收签字",def:"Formal approval that work is accepted as complete.",ex:"We need your sign-off on Friday to start production.",exzh:"我们需要您周五验收签字才能开始投产。",hook:"动词形式 <b>sign off on something</b>。项目的终点线。"},
+revised_plan:{w:"revised plan",ipa:"/rɪˈvaɪzd plæn/",cat:"PROJECT · n.",zh:"修订计划",def:"An updated schedule that reflects what has changed.",ex:"I'll send a revised plan tonight with both scenarios.",exzh:"今晚我会发一份包含两种情况的修订计划。",hook:"延期从来不只是道歉，而是 <b>a revised plan with dates</b>。"}
+};
+
+/* extra words that only appear in the daily check-in */
+const W2 = {
+actuator:{w:"actuator",ipa:"/ˈæktjueɪtə/",cat:"HARDWARE · n.",zh:"执行器",def:"A device that converts energy into physical motion.",ex:"The arm uses six electric actuators, one per joint.",exzh:"这条机械臂用六个电动执行器，每个关节一个。",hook:"act（动作）+ -uator：让东西动起来的器件。"},
+gripper:{w:"gripper",ipa:"/ˈɡrɪpə/",cat:"HARDWARE · n.",zh:"夹爪",def:"The tool on the end of a robot arm that grasps objects.",ex:"The parallel gripper can't close on anything wider than 80 mm.",exzh:"这个平行夹爪夹不住宽于 80 毫米的物体。",hook:"grip（握）+ -er。常见：<b>parallel gripper</b>、<b>suction gripper</b>。"},
+end_effector:{w:"end effector",ipa:"/end ɪˈfektə/",cat:"HARDWARE · n.",zh:"末端执行器",def:"The device at the end of a robot arm that interacts with the environment.",ex:"We can swap the end effector in under a minute.",exzh:"我们一分钟内就能换末端执行器。",hook:"比 gripper 更泛：夹爪、焊枪、相机都算 end effector。"},
+dof:{w:"degrees of freedom (DoF)",ipa:"/dɪˈɡriːz əv ˈfriːdəm/",cat:"HARDWARE · n.",zh:"自由度",def:"The number of independent ways a robot can move.",ex:"A six-DoF arm can reach any position and orientation.",exzh:"六自由度机械臂可以到达任意位置和姿态。",hook:"口语直接说 <b>six-DoF</b>，读作 six-dof。"},
+payload:{w:"payload",ipa:"/ˈpeɪləʊd/",cat:"HARDWARE · n.",zh:"负载",def:"The maximum weight a robot can carry safely.",ex:"The spec says a 5 kg payload, but that's at the wrist.",exzh:"规格写 5 公斤负载，但那是指腕部。",hook:"pay + load：机器人“付得起”的重量。"},
+lidar:{w:"LiDAR",ipa:"/ˈlaɪdɑː/",cat:"SENSING · n.",zh:"激光雷达",def:"A sensor that measures distance with reflected laser pulses.",ex:"The LiDAR returns garbage when the floor is wet.",exzh:"地面潮湿时激光雷达返回的数据是乱的。",hook:"Light + radar。读 lie-dar。"},
+imu:{w:"IMU",ipa:"/aɪ em ˈjuː/",cat:"SENSING · n.",zh:"惯性测量单元",def:"A sensor combining accelerometers and gyroscopes to measure motion.",ex:"The IMU drifts about two degrees per minute.",exzh:"IMU 每分钟漂移约两度。",hook:"Inertial Measurement Unit。搭配：<b>IMU drift</b>。"},
+calibration:{w:"calibration",ipa:"/ˌkælɪˈbreɪʃn/",cat:"SENSING · n.",zh:"标定",def:"Adjusting a sensor so its measurements match known references.",ex:"The camera-to-arm calibration is off by about 3 mm.",exzh:"相机与机械臂的标定偏差约 3 毫米。",hook:"动词 <b>calibrate</b>。“标定偏了” = calibration is off。"},
+latency:{w:"latency",ipa:"/ˈleɪtənsi/",cat:"CONTROL · n.",zh:"延迟",def:"The delay between an input and the system's response.",ex:"80 ms of camera latency makes the visual servoing unstable.",exzh:"相机 80 毫秒延迟导致视觉伺服不稳定。",hook:"late（晚）→ latency。和 delay 的区别：latency 是系统固有延迟。"},
+pid:{w:"PID controller",ipa:"/piː aɪ ˈdiː/",cat:"CONTROL · n.",zh:"PID 控制器",def:"A controller using proportional, integral and derivative terms of the error.",ex:"Bump up the derivative gain a little to damp the oscillation.",exzh:"把微分增益调大一点来抑制振荡。",hook:"调 PID 的口语：<b>tune the gains</b>、<b>bump up / back off</b>。"},
+trajectory:{w:"trajectory",ipa:"/trəˈdʒektəri/",cat:"CONTROL · n.",zh:"轨迹",def:"The path a robot follows over time, including velocity and timing.",ex:"The planner generates a smooth trajectory.",exzh:"规划器生成了平滑轨迹。",hook:"path 是路线，trajectory 带时间。重音在 tra-<b>jec</b>-tory。"},
+slam:{w:"SLAM",ipa:"/slæm/",cat:"CONTROL · n.",zh:"同步定位与建图",def:"Simultaneous Localization and Mapping.",ex:"We ran SLAM over the whole warehouse in twenty minutes.",exzh:"我们二十分钟跑完了整个仓库的 SLAM。",hook:"动词化：<b>run SLAM</b>。"},
+perception:{w:"perception",ipa:"/pəˈsepʃn/",cat:"AI · n.",zh:"感知",def:"Interpreting sensor data to understand the surroundings.",ex:"The perception stack runs at 15 frames per second.",exzh:"感知模块以每秒 15 帧运行。",hook:"<b>perception stack</b>（感知模块栈）是团队里的常用说法。"},
+point_cloud:{w:"point cloud",ipa:"/pɔɪnt klaʊd/",cat:"AI · n.",zh:"点云",def:"A set of 3D points from a LiDAR or depth camera.",ex:"We downsample the point cloud before segmentation.",exzh:"分割前先对点云降采样。",hook:"搭配：<b>dense / sparse point cloud</b>、<b>downsample</b>。"},
+firmware:{w:"firmware",ipa:"/ˈfɜːmweə/",cat:"SOFTWARE · n.",zh:"固件",def:"Low-level software running directly on a device's microcontroller.",ex:"Flash the new firmware before you power-cycle it.",exzh:"断电重启前先刷新固件。",hook:"动词 <b>flash the firmware</b>（刷固件）。"},
+ros:{w:"ROS",ipa:"/rɒs/",cat:"SOFTWARE · n.",zh:"机器人操作系统",def:"An open-source framework for robot software.",ex:"We migrated the whole stack from ROS 1 to ROS 2.",exzh:"我们把整个软件栈从 ROS 1 迁到了 ROS 2。",hook:"读作一个词 ross，不拼字母。"},
+estop:{w:"emergency stop (E-stop)",ipa:"/ɪˈmɜːdʒənsi stɒp/",cat:"SAFETY · n.",zh:"急停",def:"A button that immediately cuts power to robot motion.",ex:"Keep your hand near the E-stop during the first test.",exzh:"第一次测试时把手放在急停附近。",hook:"动词：<b>hit the E-stop</b>。"},
+cobot:{w:"cobot",ipa:"/ˈkəʊbɒt/",cat:"SAFETY · n.",zh:"协作机器人",def:"A robot designed to work safely next to humans.",ex:"The cobot slows down when someone enters the workspace.",exzh:"有人进入工作区时协作机器人会减速。",hook:"collaborative + robot。"},
+prototype:{w:"prototype",ipa:"/ˈprəʊtətaɪp/",cat:"BUSINESS · n.",zh:"原型机",def:"An early working version built to test a design.",ex:"The prototype works, but it's nowhere near production-ready.",exzh:"原型机能用，但离量产还远。",hook:"反义：<b>production-ready</b>。"},
+throughput:{w:"throughput",ipa:"/ˈθruːpʊt/",cat:"BUSINESS · n.",zh:"吞吐量",def:"The amount of work completed per unit time.",ex:"The customer wants 600 picks per hour; we're at 420.",exzh:"客户要每小时 600 次抓取，我们现在 420。",hook:"through + put：单位时间“过去”多少。"}
+};
+const DAILY_BANK = {...W, ...W2};
+
+/* ================= TASKS (role × scene) ================= */
+const TASKS = {
+"engineer:one_on_one": {
+  goals:["学会 5 个排查故障时必用的词","通过 3 道快测","向 Sam 完成一次清晰的故障汇报"], wordsTitle:"排查故障的 5 个词",
+  chatTitle:"向 Sam 汇报", chatLead:"Sam 走过来问你发生了什么。每一轮从三句话里选一句，选完会看到点评。",
+  chips:["说清现象","报告错误/日志","能否复现","提出下一步"], words:["joint","encoder","torque","log","reproduce"],
+  quiz:[
+  {stem:"“编码器”对应哪个词？",hint:"提示：它装在电机轴上，负责数转了多少。",opts:["encoder","actuator","gripper"],ans:0,fb:"encoder 是测转角的传感器；actuator 是执行器，gripper 是夹爪。"},
+  {stem:"The motor stalls because it doesn't have enough <code>____</code> for that load.",hint:"电机带不动负载，缺的是什么？",opts:["latency","torque","payload"],ans:1,fb:"缺的是扭矩 torque。payload 是负载上限，latency 是延迟。"},
+  {stem:"I can't <code>____</code> the crash on the bench — it only happens on the floor.",hint:"实验台上做不到的事情是？",opts:["deploy","calibrate","reproduce"],ans:2,fb:"reproduce 复现。deploy 是部署，calibrate 是标定。"}],
+  dialog:[
+  {who:"sam",text:"Hey, you said the arm stopped again? Walk me through what happened.",goal:0,opts:[
+    {t:"It stopped in the middle of a trajectory about ten minutes ago, and joint three is making a clicking noise.",s:2,fb:"很好：时间、现象、位置一句说清。"},
+    {t:"The arm is broken.",s:0,fb:"太笼统。工程师汇报要给出 what / when / where。"},
+    {t:"It stopped. I think the joint has problem.",s:1,fb:"方向对，但要说 “has <b>a</b> problem”，并补上哪个 joint、什么时候。"}]},
+  {who:"sam",text:"Clicking on joint three... Did it throw any error, or did it just freeze?",goal:1,opts:[
+    {t:"It just froze. No error on the screen, but I haven't pulled the logs yet.",s:2,fb:"诚实又有下一步。“pull the logs” 很地道。"},
+    {t:"I don't know, I didn't look.",s:0,fb:"诚实是好的，但要接一句行动：“I'll pull the logs now.”"},
+    {t:"Yes, it throw an error.",s:1,fb:"过去式：it <b>threw</b> an error。Sam 会追问 what error?"}]},
+  {who:"sam",text:"OK. Before we touch anything: can you reproduce it, or was it a one-off?",goal:2,opts:[
+    {t:"I can reproduce it. It happens every time the joint passes about 120 degrees under load.",s:2,fb:"能复现 + 触发条件，这就是 Sam 要的。"},
+    {t:"Maybe. I only saw it once.",s:1,fb:"更好：“I've only seen it once — I'll try to reproduce it now.”"},
+    {t:"I will fix it myself.",s:0,fb:"答非所问。Sam 问的是能否复现。"}]},
+  {who:"sam",text:"120 degrees under load. That smells like the encoder losing counts, or not enough torque. What do you want to check first?",goal:3,opts:[
+    {t:"Let's check the encoder counts in the logs first, then measure torque at that angle.",s:2,fb:"有顺序、有依据，用上了 encoder / logs / torque。"},
+    {t:"Let's replace the motor.",s:0,fb:"跳过了找 root cause。没证据就换件，Sam 会反对。"},
+    {t:"I think check the encoder.",s:1,fb:"语法补全：“I think we should check the encoder first.”"}]}],
+  close:{who:"sam",text:"Good plan. Pull the logs and ping me when you've got the encoder data."},
+  notes:{hi:"Clear report, and you asked the right question before touching the hardware.",mid:"Decent. Next time lead with when, where and whether you can reproduce it.",low:"I had to pull the details out of you. Practice the first sentence: when, which joint, what you saw."}
+},
+"engineer:meeting": {
+  goals:["学会 5 个会上汇报必用的词","通过 3 道快测","在例会上用三句话说清状态，细节 take offline"], wordsTitle:"例会汇报的 5 个词",
+  chatTitle:"例会上汇报", chatLead:"Priya 点到你。会上每个人只有两三分钟，Sam 可能插话问细节。",
+  chips:["简短汇报","是否 blocker","细节 offline","ETA 与需求"], words:["blocker","root_cause","workaround","eta","take_offline"],
+  quiz:[
+  {stem:"“这个细节我们会后单独聊” 怎么说？",hint:"会议上被追问细节时的标准回应。",opts:["take it offline","wrap it up","call it a day"],ans:0,fb:"take it offline 会后单聊。wrap it up 是收尾，call it a day 是今天到此为止。"},
+  {stem:"We have a <code>____</code> for the demo, but no root cause yet.",hint:"先绕过去的方案叫什么？",opts:["workaround","blocker","milestone"],ans:0,fb:"workaround。blocker 是卡点，milestone 是里程碑。"},
+  {stem:"Priya asks: “What's your <code>____</code>?” — 她在问修复的预计时间。",hint:"三个字母的缩写。",opts:["ROI","IMU","ETA"],ans:2,fb:"ETA 预计完成时间。ROI 是投资回报率，IMU 是惯性测量单元。"}],
+  dialog:[
+  {who:"priya",text:"OK, next: the arm. I heard it stopped again on Friday. Give us the short version.",goal:0,opts:[
+    {t:"Yes. It stops at 120 degrees under load, every time. We don't have the root cause yet, but we have a workaround for the demo.",s:2,fb:"现象 + 状态 + 方案，三句话。这就是 short version。"},
+    {t:"So on Friday I was running the trajectory test and about ten minutes in the arm made a clicking noise and stopped, and then I checked the encoder and…",s:1,fb:"内容对，但会上太长。细节留给 Sam 会后聊。"},
+    {t:"It's broken again. Sam knows the details.",s:0,fb:"把自己的事推给别人，Priya 会皱眉。"}]},
+  {who:"priya",text:"Is it a blocker for Thursday?",goal:1,opts:[
+    {t:"Not with the workaround — we cap the joint at 100 degrees. It's a blocker only if the customer needs the full range.",s:2,fb:"明确回答 + 条件。会议最需要这种判断。"},
+    {t:"Maybe.",s:0,fb:"会议上最没用的词。至少说在什么条件下是、什么条件下不是。"},
+    {t:"I think not blocker.",s:1,fb:"语法：“I don't think it's a blocker.” 再补上条件。"}]},
+  {who:"sam",text:"Quick question — did you get the encoder data from the logs?",goal:2,opts:[
+    {t:"Partly. I've got the counts around 120 degrees; let's take the details offline after this and go through them together.",s:2,fb:"回答了，然后把细节 take offline。既不敷衍 Sam，也不占大家时间。"},
+    {t:"Yes — the counts drop by about 40 at 118 degrees and recover at 125, which means the encoder…",s:1,fb:"内容很好，但这是会后该讲的。先说 “let's take it offline”。"},
+    {t:"Not yet.",s:0,fb:"没有下一步。补一句什么时候能给 Sam。"}]},
+  {who:"priya",text:"Good. What's your ETA for the root cause, and what do you need?",goal:3,opts:[
+    {t:"ETA is Wednesday, assuming the bench test reproduces it. I need two hours of Sam's time tomorrow.",s:2,fb:"时间 + 前提 + 需求。Priya 能立刻安排。"},
+    {t:"Soon. I'll try my best.",s:0,fb:"没有时间也没有需求。“try my best” 在会上等于没说。"},
+    {t:"Wednesday.",s:1,fb:"有时间了，再加上前提条件和你需要什么。"}]}],
+  close:{who:"priya",text:"Wednesday it is. Sam, block two hours tomorrow. Next item."},
+  notes:{hi:"Short, clear, and you took the detail offline. That's a model update.",mid:"Good content. Trim it: status, blocker or not, ETA, what you need.",low:"The team still doesn't know if Thursday is at risk. Lead with that next time."}
+},
+"engineer:presentation": {
+  goals:["学会 5 个技术演示必用的词","通过 3 道快测","向客户坦诚说明已知问题并用数据回应质疑"], wordsTitle:"技术演示的 5 个词",
+  chatTitle:"向客户演示", chatLead:"你站在客户前面讲技术现状。有的轮次是舞台提示，由你开口；有的轮次是 Mr. Tanaka 的质疑。",
+  chips:["开场有结构","坦诚说问题","用数据回应","收尾有要点"], words:["walk_through","known_issue","mitigation","repeatability","takeaway"],
+  quiz:[
+  {stem:"Let me <code>____</code> the test results.",hint:"“带您过一遍”。",opts:["walk you through","look you at","take you off"],ans:0,fb:"walk you through 带您过一遍。另外两个不是英语里的说法。"},
+  {stem:"“已知问题”对应哪个词？",hint:"已经在跟踪、有方案的问题。",opts:["root cause","known issue","blocker"],ans:1,fb:"known issue。root cause 是根本原因，blocker 是卡点。"},
+  {stem:"We've put a <code>____</code> in place: the joint is capped at 100 degrees.",hint:"缓解措施。",opts:["milestone","payload","mitigation"],ans:2,fb:"mitigation 缓解措施。milestone 里程碑，payload 负载。"}],
+  dialog:[
+  {who:"stage",text:"🎤 开场。Mr. Tanaka 和两位工程师坐在前面。你先说第一句。",goal:0,opts:[
+    {t:"Good morning. In the next ten minutes I'll walk you through what the arm can do today, one known issue, and how we're handling it.",s:2,fb:"开场说结构，主动提 known issue。客户立刻知道你不会藏事。"},
+    {t:"Hello everyone, today I will introduce our robot arm. It is very good.",s:1,fb:"太空。给结构：A、B、C。"},
+    {t:"Sorry, we have some problem with the arm, but let's start.",s:0,fb:"开场道歉等于把演示定调为失败。"}]},
+  {who:"stage",text:"📊 现状页。你要说明机械臂的 known issue。",goal:1,opts:[
+    {t:"One known issue: under load, joint three stalls at 120 degrees. As a mitigation, we've capped it at 100 degrees for today, which covers your pick-and-place range.",s:2,fb:"问题、缓解措施、对客户意味着什么，一气呵成。"},
+    {t:"There is a small problem but don't worry, it's fine.",s:0,fb:"客户最讨厌 “don't worry”。说清是什么、怎么处理。"},
+    {t:"Joint three has problem at 120 degree, so today we only use 100 degree.",s:1,fb:"内容对。用 mitigation，并补一句 “which covers your range”。"}]},
+  {who:"tanaka",text:"Capped at 100 degrees. So what does that do to the repeatability you promised?",goal:2,opts:[
+    {t:"Nothing — repeatability is still 0.1 millimeters across the capped range. We measured it this morning; the numbers are on the next slide.",s:2,fb:"数字 + 测量时间 + 证据在哪。质疑就这样化解。"},
+    {t:"It should be OK.",s:0,fb:"没有数据的回答，客户不会信。"},
+    {t:"Repeatability is same, 0.1 mm.",s:1,fb:"有数字了，再加证据：measured this morning。"}]},
+  {who:"stage",text:"🏁 收尾。给客户留下要点，并说下一步。",goal:3,opts:[
+    {t:"Two takeaways: the arm meets your cycle time today, and the root cause fix lands next Wednesday. I'll send the test data this afternoon. Happy to take questions.",s:2,fb:"takeaway + 下一步 + 邀请提问。标准收尾。"},
+    {t:"That's all. Thank you.",s:0,fb:"没有要点，客户带不走结论。"},
+    {t:"So the problem will be fixed next week. Any questions?",s:1,fb:"先说正面 takeaway，再说修复时间。"}]}],
+  close:{who:"tanaka",text:"Thank you. Send the data and we'll review it with our team."},
+  notes:{hi:"Clear structure and you named the issue before I asked. That builds trust.",mid:"Good data, but tell me the problem first and the fix next. Don't make me ask.",low:"I left knowing there was a problem but not what it means for my line. Lead with the takeaway."}
+},
+"pm:one_on_one": {
+  goals:["学会 5 个评估问题影响时必用的词","通过 3 道快测","向 Sam 问清影响并一起定出演示方案"], wordsTitle:"评估影响的 5 个词",
+  chatTitle:"去找 Sam", chatLead:"你去找负责排查的 Sam。目标是问到信息、拿到方案，而不是催和指挥。",
+  chips:["问清影响","问方案不越界","权衡取舍","明确下一步"], words:["impact","root_cause","workaround","blocker","trade_off"],
+  quiz:[
+  {stem:"“临时解决方案”对应哪个词？",hint:"先绕过去，不是真正修好。",opts:["workaround","root cause","rollback"],ans:0,fb:"workaround 临时方案；root cause 根本原因；rollback 回滚。"},
+  {stem:"We don't know the <code>____</code> yet, but we have a workaround.",hint:"还没找到的是什么？",opts:["impact","root cause","trade-off"],ans:1,fb:"root cause。和 workaround 对照的是 root cause。"},
+  {stem:"Is this a <code>____</code> for Thursday's demo?",hint:"这会不会把演示卡住？",opts:["milestone","payload","blocker"],ans:2,fb:"blocker 阻碍项。"}],
+  dialog:[
+  {who:"sam",text:"Hey. I guess you heard the arm stopped again. What do you need from me?",goal:0,opts:[
+    {t:"Mainly the impact: does this block Thursday's demo, and what do we know so far?",s:2,fb:"先问 impact、再问已知信息。"},
+    {t:"Can you fix it today?",s:1,fb:"直接要时间容易变成催。先问影响。"},
+    {t:"Why did it break again? The customer is coming on Thursday.",s:0,fb:"听起来像指责，Sam 会防御。"}]},
+  {who:"sam",text:"Honestly, we don't know the root cause yet. It stops at 120 degrees under load — could be the encoder, could be torque.",goal:1,opts:[
+    {t:"Understood. Is there a workaround that keeps the demo path working while you dig into the root cause?",s:2,fb:"接受不确定性，然后问 workaround，没有越界。"},
+    {t:"Then you should replace the encoder.",s:1,fb:"越界了：问 options，不开技术药方。"},
+    {t:"OK, just tell me when it's fixed.",s:0,fb:"没有推进。"}]},
+  {who:"sam",text:"We could limit the joint to 100 degrees for the demo. It'll look slightly less smooth, but it's safe.",goal:2,opts:[
+    {t:"That's a reasonable trade-off. Let me check with the customer whether the full range matters for their use case.",s:2,fb:"说出取舍判断 + 自己去确认需求。"},
+    {t:"OK, but it looks a bit ugly.",s:1,fb:"只说感受没给决定。用 trade-off。"},
+    {t:"No. The demo has to be perfect.",s:0,fb:"“perfect” 不是需求，客户要什么才是。"}]},
+  {who:"sam",text:"Fair. If they need the full range, this becomes a blocker and I'll need two more days.",goal:3,opts:[
+    {t:"Got it. I'll flag it as a potential blocker in the status update and get you the customer's answer by tomorrow morning.",s:2,fb:"明确动作 + 明确时间。"},
+    {t:"I'll ask the customer.",s:1,fb:"补上时间点：by when?"},
+    {t:"Two days is too long.",s:0,fb:"表达不满但没有下一步。"}]}],
+  close:{who:"sam",text:"Perfect. Ping me as soon as you hear back from them."},
+  notes:{hi:"You asked the right questions and didn't try to engineer the fix yourself.",mid:"You got what you needed, but lead with impact and options next time.",low:"We spent the conversation on pressure instead of information."}
+},
+"pm:meeting": {
+  goals:["学会 5 个会上做决定必用的词","通过 3 道快测","在例会上说影响、定优先级、认领行动项"], wordsTitle:"会上做决定的 5 个词",
+  chatTitle:"例会上发言", chatLead:"Priya 问产品侧的意见。Sam 会说出代价，你要做取舍、认领行动项、想到相关方。",
+  chips:["说影响定优先级","做 scope 取舍","认领 action item","对齐 stakeholder"], words:["priority","scope","action_item","align","stakeholder"],
+  quiz:[
+  {stem:"“行动项”对应哪个词？",hint:"会后某人要去做的具体事。",opts:["action item","agenda","milestone"],ans:0,fb:"action item。agenda 是议程，milestone 是里程碑。"},
+  {stem:"Let's <code>____</code> on what the customer actually needs before we change anything.",hint:"达成一致。",opts:["escalate","align","deploy"],ans:1,fb:"align 对齐。escalate 上报，deploy 部署。"},
+  {stem:"The Thursday demo is the top <code>____</code> this week.",hint:"优先级。",opts:["scope","impact","priority"],ans:2,fb:"priority。scope 是范围，impact 是影响。"}],
+  dialog:[
+  {who:"priya",text:"Mia, from the product side — what does the arm issue mean for Thursday?",goal:0,opts:[
+    {t:"Thursday is our top priority. With the 100-degree workaround the demo still covers the customer's use case, so I'd keep the date.",s:2,fb:"优先级 + 依据 + 决定。产品经理在会上该这样说话。"},
+    {t:"It's bad. The customer will be unhappy.",s:0,fb:"情绪不是信息。说影响和决定。"},
+    {t:"I think we can still do Thursday.",s:1,fb:"加依据：workaround covers the use case。"}]},
+  {who:"sam",text:"Just so everyone knows — if they need the full range, I need two more days, and that pulls me off the gripper work.",goal:1,opts:[
+    {t:"Understood. Then let's keep the gripper work out of scope this week and decide on the full range after I confirm with the customer.",s:2,fb:"明确 scope 决定，并说清决策依据和时间。"},
+    {t:"Can you do both?",s:0,fb:"不做取舍就是把问题推回给工程师。"},
+    {t:"OK, gripper can wait.",s:1,fb:"决定对了，用 out of scope 说清，并说什么时候再决定。"}]},
+  {who:"priya",text:"Who's talking to the customer, and when?",goal:2,opts:[
+    {t:"I'll take that as an action item: I'll call their engineering lead today and report back by tomorrow's standup.",s:2,fb:"认领 + 时间 + 回报方式。"},
+    {t:"Someone should call them.",s:0,fb:"没有 owner 的行动项不会发生。"},
+    {t:"I will call them.",s:1,fb:"加时间点和回报方式。"}]},
+  {who:"priya",text:"Anything else we need to align on before we move on?",goal:3,opts:[
+    {t:"One thing: sales is promising the full range in the proposal. I'll align with them today so we don't over-commit.",s:2,fb:"想到了 stakeholder，并认领对齐动作。"},
+    {t:"No, all good.",s:1,fb:"可以结束，但产品经理应该想到销售这个相关方。"},
+    {t:"Sales keeps promising things we don't have.",s:0,fb:"抱怨不是对齐。说你要做什么。"}]}],
+  close:{who:"priya",text:"Good catch. Put it in the notes. Next."},
+  notes:{hi:"You made the call, owned the action and caught the sales risk.",mid:"Right instincts. Be more explicit: what's in scope, who owns what, by when.",low:"We left the meeting without a decision or an owner. Product needs to drive that."}
+},
+"pm:presentation": {
+  goals:["学会 5 个面向客户讲产品必用的词","通过 3 道快测","从客户 use case 出发讲清限制，承诺有边界"], wordsTitle:"客户演示的 5 个词",
+  chatTitle:"向客户演示", chatLead:"你代表产品向客户介绍。有的轮次是舞台提示，由你开口；有的轮次是 Mr. Tanaka 的追问。",
+  chips:["从 use case 开场","说清 limitation","承诺有边界","要 feedback 定下一步"], words:["use_case","roadmap","limitation","commit","feedback"],
+  quiz:[
+  {stem:"“客户的实际使用场景”对应哪个词？",hint:"客户会怎么用这个产品。",opts:["use case","trade-off","spec"],ans:0,fb:"use case。trade-off 是取舍，spec 是规格。"},
+  {stem:"I can't <code>____</code> to the full range today, but it's on the roadmap for next month.",hint:"承诺。",opts:["escalate","commit","reproduce"],ans:1,fb:"commit to 承诺。"},
+  {stem:"“产品路线图”对应哪个词？",hint:"未来功能的计划顺序。",opts:["timeline","milestone","roadmap"],ans:2,fb:"roadmap。timeline 是时间线，milestone 是里程碑。"}],
+  dialog:[
+  {who:"stage",text:"🎤 开场。你代表产品方向客户介绍。先说第一句。",goal:0,opts:[
+    {t:"Good morning. I'd like to start with your use case — 600 picks an hour on the packing line — and show you how the arm handles it today, including one limitation.",s:2,fb:"从客户的 use case 开场，并预告 limitation。"},
+    {t:"Hello, today I will show you our product. It has many features.",s:1,fb:"从功能开场，客户不关心。从他的产线开场。"},
+    {t:"Before we start, I should say the arm has a problem this week.",s:0,fb:"先道歉，演示就输了一半。"}]},
+  {who:"stage",text:"📊 说明 limitation：今天关节限制在 100 度。",goal:1,opts:[
+    {t:"One limitation today: the joint is capped at 100 degrees while our team fixes a fault. For your packing use case that range is enough; the full range comes back next week.",s:2,fb:"limitation + 对客户的意义 + 时间。"},
+    {t:"There is a limitation, but it's not important.",s:0,fb:"重不重要由客户判断，你的工作是说清楚。"},
+    {t:"Today only 100 degrees because the joint has a problem. Next week it is OK.",s:1,fb:"内容对。补上 “for your use case that's enough”。"}]},
+  {who:"tanaka",text:"Our second line needs the full range. Can you commit to that by the end of the month?",goal:2,opts:[
+    {t:"I can commit to the full range by the end of the month for line one. For line two I'd rather confirm the payload with your team first, then commit in writing.",s:2,fb:"承诺有边界：什么、什么时候、哪条线。"},
+    {t:"Yes, no problem, we can do everything.",s:0,fb:"over-commit。月底做不到就是事故。"},
+    {t:"Maybe. I need to check.",s:1,fb:"可以，但说清确认什么、什么时候回复。"}]},
+  {who:"stage",text:"🏁 收尾。请客户给反馈并说下一步。",goal:3,opts:[
+    {t:"I'd love your feedback on the pick cycle you saw today. I'll send the roadmap for the full range tomorrow, and we can review line two together next week.",s:2,fb:"具体要 feedback + 两个明确的下一步。"},
+    {t:"Thanks for coming. Bye.",s:0,fb:"没有下一步，客户关系就停在这里。"},
+    {t:"Please tell me if you have any feedback.",s:1,fb:"feedback 要具体：on what? 再加下一步。"}]}],
+  close:{who:"tanaka",text:"Send the roadmap. My engineers will have questions about line two."},
+  notes:{hi:"You talked about my line, not your product. And you didn't promise what you can't deliver.",mid:"Good, but tie every feature back to my use case, and be careful what you commit to.",low:"I heard a product pitch and a vague promise. Tell me what it does for my line, and what it can't do yet."}
+},
+"pjm:one_on_one": {
+  goals:["学会 5 个管理工期和风险时必用的词","通过 3 道快测","向 Sam 拿到 ETA、识别风险并定出对外沟通"], wordsTitle:"工期与风险的 5 个词",
+  chatTitle:"去找 Sam", chatLead:"你去找负责排查的 Sam。目标是拿到时间、识别风险、做出决定。",
+  chips:["要 ETA","识别风险","对冲决策","对外沟通"], words:["eta","milestone","lead_time","risk","escalate"],
+  quiz:[
+  {stem:"“备件的交货周期”对应哪个词？",hint:"从下单到收到货的时间。",opts:["lead time","uptime","milestone"],ans:0,fb:"lead time。uptime 是正常运行时间。"},
+  {stem:"What's your <code>____</code> for the fix?",hint:"预计完成时间。",opts:["BOM","ETA","ROI"],ans:1,fb:"ETA。BOM 物料清单，ROI 投资回报率。"},
+  {stem:"If we can't fix it by Friday, I'll <code>____</code> to the customer's director with a revised plan.",hint:"带着方案向上沟通。",opts:["deploy","reproduce","escalate"],ans:2,fb:"escalate 上报。"}],
+  dialog:[
+  {who:"sam",text:"Hey. You're here about the arm, right? It stopped again this morning.",goal:0,opts:[
+    {t:"Yes. I need a rough ETA for the fix, and whether it puts the Friday milestone at risk.",s:2,fb:"一句话要到 ETA 和对里程碑的影响。"},
+    {t:"Yes. When will it be done?",s:1,fb:"把它和 milestone 挂钩，Sam 才知道为什么。"},
+    {t:"Yes. This is the third time. What is going on with your team?",s:0,fb:"开场指责。"}]},
+  {who:"sam",text:"If it's the encoder, we need a replacement part — that's a two-week lead time. If it's just tuning, one day.",goal:1,opts:[
+    {t:"Two weeks would miss the milestone. Can we order the encoder now as a hedge, in case it turns out to be the part?",s:2,fb:"识别 lead time 风险，提出对冲。"},
+    {t:"Order the part.",s:1,fb:"决定对，说明理由并用请求语气。"},
+    {t:"OK, let's wait until you know which one it is.",s:0,fb:"被动等待，白白损失两天。"}]},
+  {who:"sam",text:"Sure, it's about $400. I'll know which case it is by tomorrow afternoon.",goal:2,opts:[
+    {t:"Great. I'll log it as a risk with tomorrow afternoon as the decision point, and we revisit the milestone then.",s:2,fb:"把口头信息变成 risk + decision point。"},
+    {t:"Please tell me tomorrow.",s:1,fb:"把它记成 risk，定 decision point。"},
+    {t:"OK.",s:0,fb:"信息没有落地。"}]},
+  {who:"sam",text:"One more thing — if it is the part, we'll slip at least a week. Do you want me to tell the customer, or will you?",goal:3,opts:[
+    {t:"I'll handle it. If it slips, I'll escalate to their director with a revised plan rather than just an apology.",s:2,fb:"escalate with a plan，对外沟通自己扛。"},
+    {t:"I'll tell them sorry.",s:1,fb:"客户要的是 revised plan，不是 sorry。"},
+    {t:"You tell them, you know the details.",s:0,fb:"推责。"}]}],
+  close:{who:"sam",text:"Deal. I'll send you the test results tomorrow by 3."},
+  notes:{hi:"You turned a vague problem into a decision point and a hedge in four sentences.",mid:"You got the ETA, but name the risk and the decision point out loud.",low:"We talked about the problem but not about what you'll do with it."}
+},
+"pjm:meeting": {
+  goals:["学会 5 个主持进度讨论必用的词","通过 3 道快测","在例会上给出状态、识别依赖、分配 owner 和 deadline"], wordsTitle:"进度讨论的 5 个词",
+  chatTitle:"例会上管进度", chatLead:"Priya 让你讲进度。Sam 会抛出交货周期，你要把它变成依赖项、分配负责人，并决定何时通知客户。",
+  chips:["对里程碑说状态","识别 dependency","定 owner 和 deadline","沟通时机"], words:["agenda","on_track","dependency","owner","deadline"],
+  quiz:[
+  {stem:"“按计划进行”怎么说？",hint:"项目状态的三种说法之一。",opts:["on track","on hold","offline"],ans:0,fb:"on track 按计划。on hold 是暂停，offline 是离线/会后。"},
+  {stem:"Ordering the encoder is a <code>____</code> for the Friday milestone.",hint:"必须先发生的事。",opts:["deliverable","dependency","workaround"],ans:1,fb:"dependency 依赖项。deliverable 是交付物。"},
+  {stem:"Every action item needs an <code>____</code> and a deadline.",hint:"一个人负责。",opts:["agenda","vendor","owner"],ans:2,fb:"owner 负责人。agenda 议程，vendor 供应商。"}],
+  dialog:[
+  {who:"priya",text:"Wei, you're running the schedule. Where are we against Friday?",goal:0,opts:[
+    {t:"Friday is at risk, not lost. We're on track if it's a tuning issue; if it's the encoder, we slip one week. We'll know by tomorrow 3 pm.",s:2,fb:"两种情况 + 决策时间。会议最需要的状态汇报。"},
+    {t:"It depends on Sam.",s:0,fb:"进度是你的事，不是 Sam 的。"},
+    {t:"Maybe we delay to next week.",s:1,fb:"给出两种情况和决策时间，而不是 maybe。"}]},
+  {who:"sam",text:"The encoder has a two-week lead time if we need it.",goal:1,opts:[
+    {t:"Then the order is a dependency for Friday. I'd like to order it today as a hedge — $400 — unless anyone objects.",s:2,fb:"识别 dependency，提出 hedge，给会议一个可以当场拍板的决定。"},
+    {t:"Two weeks? That's too long.",s:0,fb:"抱怨交货周期改变不了它。"},
+    {t:"Let's order it.",s:1,fb:"说明它是 dependency 和 hedge，别人才会同意。"}]},
+  {who:"priya",text:"Fine. Who owns what?",goal:2,opts:[
+    {t:"Sam owns the bench test, done by tomorrow 3 pm. I own the order and the customer update, today. Mia owns the use-case confirmation, by Wednesday.",s:2,fb:"每项一个 owner 一个 deadline。"},
+    {t:"Sam will handle it.",s:0,fb:"一个人扛所有事，没有 deadline。"},
+    {t:"Sam does the test, I do the order.",s:1,fb:"加 deadline。"}]},
+  {who:"priya",text:"Last thing — should the customer hear about this now or after we know?",goal:3,opts:[
+    {t:"Now, briefly: a heads-up that Friday is at risk and a decision point tomorrow. Surprises on Thursday are worse than news on Monday.",s:2,fb:"有判断、有理由。项目经理的沟通原则。"},
+    {t:"After we know. No need to worry them.",s:0,fb:"周四的惊吓比周一的消息糟得多。"},
+    {t:"Now, I think.",s:1,fb:"说理由，别人才会支持。"}]}],
+  close:{who:"priya",text:"Agreed. Send the heads-up today. That's the agenda — thanks everyone."},
+  notes:{hi:"Every item left with an owner and a date. I didn't have to ask once.",mid:"Good plan. Say the owner and deadline out loud for each item so nothing floats.",low:"We know there's a problem but not who does what by when. Run the schedule."}
+},
+"pjm:presentation": {
+  goals:["学会 5 个向客户汇报进度必用的词","通过 3 道快测","向客户讲清风险、应急方案和修订计划"], wordsTitle:"进度汇报的 5 个词",
+  chatTitle:"向客户汇报进度", chatLead:"你向客户汇报项目进度。有的轮次是舞台提示，由你开口；有的轮次是 Mr. Tanaka 的追问。",
+  chips:["开场有结构","风险说清两种情况","给 contingency","修订计划请确认"], words:["timeline","slip","contingency","sign_off","revised_plan"],
+  quiz:[
+  {stem:"“延期”（动词）怎么说？",hint:"日期往后挪。",opts:["slip","escalate","align"],ans:0,fb:"slip 延期。escalate 上报，align 对齐。"},
+  {stem:"If the part is late, our <code>____</code> is to run the acceptance tests on the capped range.",hint:"应急方案。",opts:["milestone","contingency","agenda"],ans:1,fb:"contingency 应急方案。"},
+  {stem:"“验收签字”对应哪个词？",hint:"客户正式认可工作完成。",opts:["takeaway","lead time","sign-off"],ans:2,fb:"sign-off 验收签字。"}],
+  dialog:[
+  {who:"stage",text:"🎤 开场。你向客户汇报项目进度，Mr. Tanaka 想知道周五能不能验收。",goal:0,opts:[
+    {t:"Good morning. Three things today: where we are on the timeline, one risk to Friday's sign-off, and our contingency for it.",s:2,fb:"结构清楚，风险和应急方案都预告了。"},
+    {t:"Hello. Today I will report the project.",s:1,fb:"给结构：三件事。"},
+    {t:"Unfortunately we have a delay. Sorry about that.",s:0,fb:"开场道歉，客户只记住了 delay。"}]},
+  {who:"stage",text:"📊 说明风险：如果是编码器问题，会延期一周。",goal:1,opts:[
+    {t:"The risk: joint three has a fault. If it's a tuning issue we stay on track; if it's the encoder, the sign-off slips one week. We'll know by tomorrow at 3.",s:2,fb:"两种情况 + 决策时间。客户可以拿去向老板汇报。"},
+    {t:"There might be a delay, we are not sure yet.",s:0,fb:"不确定也要说清两种情况和什么时候确定。"},
+    {t:"Maybe one week delay because of the encoder.",s:1,fb:"补上另一种情况和决策时间。"}]},
+  {who:"tanaka",text:"A week is a problem for us. What's your contingency?",goal:2,opts:[
+    {t:"Two parts. We've already ordered the encoder so a week is the worst case, and we can run your acceptance tests on the capped range this Friday so your team isn't idle.",s:2,fb:"对冲 + 对客户的安排。这就是 contingency。"},
+    {t:"We will try to be faster.",s:0,fb:"“try” 不是方案。"},
+    {t:"We ordered the part already.",s:1,fb:"好，再加对客户团队的安排。"}]},
+  {who:"stage",text:"🏁 收尾。给出修订计划并请客户确认。",goal:3,opts:[
+    {t:"I'll send a revised plan tonight with both scenarios and dates. Could you confirm by Wednesday which one your line can accept?",s:2,fb:"revised plan + 时间 + 请客户确认的具体事项。"},
+    {t:"That's all, thank you for listening.",s:0,fb:"没有计划也没有请求。"},
+    {t:"I will send you the plan.",s:1,fb:"加时间，并说清请客户确认什么。"}]}],
+  close:{who:"tanaka",text:"Send both scenarios. If the capped range passes our tests, we can live with a week."},
+  notes:{hi:"You brought the risk, the contingency and the dates. That's what I need to tell my boss.",mid:"Good. Give me the dates for both scenarios without my asking.",low:"I heard 'maybe a delay' and 'sorry'. I need scenarios, dates and a plan."}
+}
+};
+
+/* ================= STATE ================= */
+const S = { role:"engineer", scene:"one_on_one", step:0, wi:0, known:{}, qi:0, quizRight:0, di:0, chatScore:0, answered:false };
+let T = null, WORDS = [], QUIZ = [], DIALOG = [];
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STEPS = ["s-home","s-words","s-quiz","s-chat","s-done","s-daily","s-dword","s-dquiz","s-ddone"];
+const TITLES = ["任务一","学词","快测","场景对话","完成","每日打卡","翻卡自评","小测","打卡成功"];
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+
+function loadTask() {
+  T = TASKS[`${S.role}:${S.scene}`]; WORDS = T.words.map(id => ({id, ...W[id]})); QUIZ = T.quiz; DIALOG = T.dialog;
+  const R = ROLES[S.role], SC = SCENES[S.scene];
+  document.querySelectorAll('#roles .pick').forEach(b => b.classList.toggle('on', b.dataset.r === S.role));
+  document.querySelectorAll('#scenes .pick').forEach(b => b.classList.toggle('on', b.dataset.s === S.scene));
+  $('#taskTitle').textContent = `${R.label} · ${SC.title}`;
+  $('#taskSetting').textContent = SC.setting;
+  $('#goals').innerHTML = T.goals.map(g => `<li>${esc(g)}</li>`).join('');
+  const people = SC.cast.map(id => CAST[id]).map(c => `<div class="person"><div class="avatar ${c.cls}">${c.ini}</div><div><span class="role">${esc(c.role)}</span><b>${esc(c.name)}</b><small>${esc(c.desc)}</small></div></div>`);
+  people.push(`<div class="person"><div class="avatar you">${esc(R.you.ini)}</div><div><span class="role">你 · ${esc(R.label)}</span><b>${esc(R.you.name)}</b><small>${esc(R.you.desc)}</small></div></div>`);
+  $('#cast').innerHTML = people.join('');
+  $('#wordsTitle').textContent = T.wordsTitle;
+  $('#chatTitle').textContent = T.chatTitle;
+  $('#chatLead').textContent = T.chatLead;
+  $('#chatEyebrow').textContent = `STEP 3 · ${SC.label}`;
+  $('#goalbar').innerHTML = T.chips.map((c, i) => `<span data-g="${i}">${esc(c)}</span>`).join('');
+  $('#doneEyebrow').textContent = `MISSION 01 · ${R.label} · ${SC.label} · 完成`;
+  store.set('rt.role', S.role); store.set('rt.scene', S.scene);
+  if (S.step === 0) renderBar();
+}
+document.querySelectorAll('#roles .pick').forEach(b => b.addEventListener('click', () => { S.role = b.dataset.r; loadTask(); }));
+document.querySelectorAll('#scenes .pick').forEach(b => b.addEventListener('click', () => { S.scene = b.dataset.s; loadTask(); }));
+
+function go(n) {
+  S.step = n;
+  STEPS.forEach((id, i) => $('#' + id).classList.toggle('on', i === n));
+  $('#ttl').textContent = TITLES[n];
+  const daily = n >= 5;
+  $('#stepLbl').textContent = n === 0 || n === 4 || n === 5 || n === 8 ? "" : daily ? `${n - 5}/2` : `STEP ${n}/3`;
+  $('#prog').style.width = (daily ? (n - 5) / 3 * 100 : n / 4 * 100) + "%";
+  $('#back').hidden = n === 0 || n === 4 || n === 8;
+  STEPS.forEach(id => $('#' + id).scrollTop = 0);
+  if (n === 1) renderWord();
+  if (n === 2) renderQuiz();
+  if (n === 3) startChat();
+  if (n === 4) renderDone();
+  if (n === 5) renderDaily();
+  if (n === 6) renderDWord();
+  if (n === 7) renderDQuiz();
+  if (n === 8) renderDDone();
+  renderBar();
+}
+$('#back').addEventListener('click', () => go(S.step === 5 ? 0 : S.step === 6 ? 5 : Math.max(0, S.step - 1)));
+$('#tabDaily').addEventListener('click', () => go(5));
+$('#tabMission2').addEventListener('click', () => go(0));
+
+function renderBar() {
+  const bar = $('#bar'); bar.innerHTML = "";
+  const mk = (label, fn, cls = "btn", dis = false) => { const b = document.createElement('button'); b.className = cls; b.textContent = label; b.disabled = dis; b.addEventListener('click', fn); bar.appendChild(b); return b; };
+  if (S.step === 0) mk(`以${ROLES[S.role].label}身份开始`, () => go(1));
+  if (S.step === 1) { mk("不认识", () => rate(false), "btn ghost"); mk("认识", () => rate(true)); }
+  if (S.step === 2) mk(S.qi < QUIZ.length - 1 ? "下一题" : "进入场景", nextQ, "btn", !S.answered);
+  if (S.step === 3) mk("查看结果", () => go(4), "btn", S.di < DIALOG.length);
+  if (S.step === 4) { mk("换个身份或场景", () => reset(true), "btn ghost"); mk("再来一次", () => reset(false)); }
+  if (S.step === 5) { const d = dailyState(), today = d.log[todayKey()]; mk(today && today.done ? "今天已打卡 · 再练一遍" : "开始今日打卡", startDaily, today && today.done ? "btn ghost" : "btn"); }
+  if (S.step === 6) { mk("不认识", () => dRate(0), "btn ghost"); mk("模糊", () => dRate(1), "btn ghost"); mk("认识", () => dRate(2)); }
+  if (S.step === 7) mk(D.qi < D.quiz.length - 1 ? "下一题" : "完成打卡", nextDQ, "btn", !D.answered);
+  if (S.step === 8) mk("回到打卡页", () => go(5));
+}
+
+/* ================= WORDS ================= */
+function speak(t) { try { const u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; u.rate = .9; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch {} }
+function renderWord() {
+  const w = WORDS[S.wi];
+  $('#deck').innerHTML = `<div class="wcard">
+    <div class="cat">${esc(w.cat)} · ${S.wi + 1} / ${WORDS.length}</div>
+    <div class="w">${esc(w.w)}</div>
+    <div><span class="ipa">${esc(w.ipa)}</span><button class="say" id="say">🔊 读一遍</button></div>
+    <div class="zh">${esc(w.zh)}</div>
+    <div class="def">${esc(w.def)}</div>
+    <div class="ex">${esc(w.ex)}<small>${esc(w.exzh)}</small></div>
+    <div class="hook">💡 ${w.hook}</div>
+  </div>`;
+  $('#say').addEventListener('click', () => speak(w.w.replace(/\(.*?\)/g, '') + ". " + w.ex));
+  $('#dots').innerHTML = WORDS.map((x, i) => `<i class="${i === S.wi ? 'on' : S.known[x.id] === true ? 'ok' : S.known[x.id] === false ? 'no' : ''}"></i>`).join('');
+}
+function rate(known) {
+  S.known[WORDS[S.wi].id] = known;
+  if (S.wi < WORDS.length - 1) { S.wi++; renderWord(); } else go(2);
+}
+
+/* ================= QUIZ ================= */
+function renderQuiz() {
+  const q = QUIZ[S.qi]; S.answered = false;
+  $('#quiz').innerHTML = `<div class="q">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px">Q${S.qi + 1} / ${QUIZ.length}</div>
+    <p class="stem">${q.stem}</p><div class="hint">${esc(q.hint)}</div>
+    <div class="opts">${q.opts.map((o, i) => `<button class="opt" data-i="${i}"><span class="k">${"ABC"[i]}</span>${esc(o)}</button>`).join('')}</div>
+    <div class="fb" id="fb"></div></div>`;
+  document.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
+    if (S.answered) return; S.answered = true;
+    const i = +b.dataset.i, right = i === q.ans; if (right) S.quizRight++;
+    document.querySelectorAll('.opt').forEach(x => { x.disabled = true; if (+x.dataset.i === q.ans) x.classList.add('right'); });
+    if (!right) b.classList.add('wrong');
+    const fb = $('#fb'); fb.className = "fb on"; fb.innerHTML = (right ? "✅ 正确。" : "❌ 不对。") + esc(q.fb);
+    renderBar();
+  }));
+  renderBar();
+}
+function nextQ() { if (S.qi < QUIZ.length - 1) { S.qi++; renderQuiz(); } else go(3); }
+
+/* ================= CHAT ================= */
+function scrollChat() { const s = $('#s-chat'); s.scrollTop = s.scrollHeight; }
+function meSays(text) {
+  const r = document.createElement('div'); r.className = 'row me';
+  r.innerHTML = `<div class="avatar you">${esc(ROLES[S.role].you.ini)}</div><div class="bub">${esc(text)}</div>`;
+  $('#chat').appendChild(r); scrollChat();
+}
+function tip(html, lvl) { const t = document.createElement('div'); t.className = 'tip lvl' + lvl; t.innerHTML = html; $('#chat').appendChild(t); scrollChat(); }
+function stage(text) { const d = document.createElement('div'); d.className = 'stagecard'; d.textContent = text; $('#chat').appendChild(d); scrollChat(); }
+function npcSays(who, text, then) {
+  const c = CAST[who];
+  const r = document.createElement('div'); r.className = 'row';
+  r.innerHTML = `<div class="avatar ${c.cls}">${c.ini}</div><div><div class="who">${esc(c.name)}</div><div class="bub typing"><i></i><i></i><i></i></div></div>`;
+  $('#chat').appendChild(r); scrollChat();
+  setTimeout(() => { const b = r.querySelector('.bub'); b.className = 'bub'; b.textContent = text; scrollChat(); then && then(); }, 700);
+}
+function present(i) {
+  const d = DIALOG[i]; if (!d) return;
+  if (d.who === 'stage') { stage(d.text); renderChoices(); } else npcSays(d.who, d.text, renderChoices);
+}
+function startChat() { if (!$('#chat').childElementCount) present(0); }
+function renderChoices() {
+  const d = DIALOG[S.di]; if (!d) return;
+  const order = [...d.opts.keys()].sort(() => Math.random() - .5);
+  $('#choices').innerHTML = `<div class="lbl">你说 · 选一句</div>` + order.map(i => `<button class="choice" data-i="${i}">${esc(d.opts[i].t)}</button>`).join('');
+  document.querySelectorAll('.choice').forEach(b => b.addEventListener('click', () => pick(+b.dataset.i)));
+  scrollChat();
+}
+function pick(i) {
+  const d = DIALOG[S.di], o = d.opts[i];
+  $('#choices').innerHTML = "";
+  meSays(o.t); S.chatScore += o.s;
+  tip((o.s === 0 ? "⚠️ " : "💡 ") + o.fb + (o.s < 2 ? `<br><span style="color:var(--muted)">更好的说法：</span>“${esc(d.opts.find(x => x.s === 2).t)}”` : ""), o.s);
+  if (o.s >= 1) $(`#goalbar [data-g="${d.goal}"]`).classList.add('done');
+  S.di++;
+  if (S.di < DIALOG.length) setTimeout(() => present(S.di), 300);
+  else npcSays(T.close.who, T.close.text, () => { tip("🎉 完成。点击下方查看结果。", 2); renderBar(); });
+}
+
+/* ================= DAILY CHECK-IN ================= */
+const D = { words: [], wi: 0, ratings: {}, quiz: [], qi: 0, right: 0, answered: false };
+const INTERVALS = [1, 2, 4, 7, 15, 30];
+const todayKey = () => { const t = new Date(); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
+const addDays = (key, n) => { const [y, m, d] = key.split('-').map(Number); const t = new Date(y, m - 1, d + n); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
+function dailyState() { try { const d = JSON.parse(store.get('rt.daily') || '{}'); d.srs = d.srs || {}; d.log = d.log || {}; return d; } catch { return { srs: {}, log: {} }; } }
+function saveDaily(d) { store.set('rt.daily', JSON.stringify(d)); }
+function seededShuffle(arr, seed) { let x = 0; for (const c of seed) x = (x * 31 + c.charCodeAt(0)) >>> 0; const rnd = () => { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+function pickToday() {
+  const d = dailyState(), key = todayKey();
+  if (d.log[key] && d.log[key].words) return d.log[key].words;
+  const all = Object.keys(DAILY_BANK);
+  const due = all.filter(id => d.srs[id] && d.srs[id].due <= key).sort((a, b) => d.srs[a].due.localeCompare(d.srs[b].due) || d.srs[a].box - d.srs[b].box);
+  const fresh = seededShuffle(all.filter(id => !d.srs[id]), key);
+  const rest = seededShuffle(all.filter(id => d.srs[id] && d.srs[id].due > key), key).sort((a, b) => d.srs[a].box - d.srs[b].box);
+  const picks = [...due, ...fresh, ...rest].filter((v, i, a) => a.indexOf(v) === i).slice(0, 5);
+  d.log[key] = { words: picks, done: false }; saveDaily(d);
+  return picks;
+}
+function streak(d) {
+  const key = todayKey(); let n = 0, day = (d.log[key] && d.log[key].done) ? key : addDays(key, -1);
+  while (d.log[day] && d.log[day].done) { n++; day = addDays(day, -1); }
+  return n;
+}
+function renderDaily() {
+  const key = todayKey(), words = pickToday(), d = dailyState();
+  const t = new Date();
+  $('#dailyDate').textContent = `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 周${"日一二三四五六"[t.getDay()]}`;
+  $('#streakN').textContent = streak(d);
+  const srs = Object.values(d.srs);
+  $('#learnedN').textContent = srs.length; $('#masteredN').textContent = srs.filter(x => x.box >= 6).length;
+  $('#cal').innerHTML = [...Array(14).keys()].map(i => { const k = addDays(key, i - 13); const done = d.log[k] && d.log[k].done; return `<div class="${done ? 'done' : ''} ${k === key ? 'today' : ''}">${Number(k.slice(-2))}</div>`; }).join('');
+  $('#todayTitle').textContent = d.log[key].done ? "今日 5 词 · 已打卡" : "今日 5 词";
+  $('#todayList').innerHTML = words.map(id => { const w = DAILY_BANK[id], s = d.srs[id]; const st = !s ? ['new', '新词'] : s.box >= 6 ? ['ok', '已掌握'] : ['rev', `复习 · 第 ${s.box + 1} 轮`]; return `<div class="dw"><div><b>${esc(w.w)}</b> ${d.log[key].done ? `<small>${esc(w.zh)}</small>` : ''}</div><span class="st ${st[0]}">${st[1]}</span></div>`; }).join('');
+}
+function startDaily() {
+  D.words = pickToday().map(id => ({ id, ...DAILY_BANK[id] })); D.wi = 0; D.ratings = {}; D.qi = 0; D.right = 0; D.answered = false;
+  D.quiz = buildDQuiz(D.words);
+  go(6);
+}
+function renderDWord() {
+  const w = D.words[D.wi];
+  $('#dwordTitle').textContent = `第 ${D.wi + 1} / ${D.words.length} 个`;
+  $('#ddeck').innerHTML = `<div class="wcard flipcard" id="flip">
+    <div class="cat">${esc(w.cat)}</div>
+    <div class="w">${esc(w.w)}</div>
+    <div><span class="ipa">${esc(w.ipa)}</span><button class="say" id="dsay">🔊 读一遍</button></div>
+    <div class="front-hint">想一想中文意思，然后点击翻面</div>
+    <div class="back">
+      <div class="zh">${esc(w.zh)}</div><div class="def">${esc(w.def)}</div>
+      <div class="ex">${esc(w.ex)}<small>${esc(w.exzh)}</small></div>
+      <div class="hook">💡 ${w.hook}</div>
+    </div></div>`;
+  $('#flip').addEventListener('click', e => { if (e.target.id !== 'dsay') $('#flip').classList.add('flipped'); });
+  $('#dsay').addEventListener('click', () => speak(w.w.replace(/\(.*?\)/g, '') + ". " + w.ex));
+  $('#ddots').innerHTML = D.words.map((x, i) => `<i class="${i === D.wi ? 'on' : D.ratings[x.id] === 2 ? 'ok' : D.ratings[x.id] === 0 ? 'no' : ''}"></i>`).join('');
+}
+function dRate(r) {
+  const w = D.words[D.wi]; D.ratings[w.id] = r;
+  const d = dailyState(), key = todayKey(), s = d.srs[w.id] || { box: 0, due: key, seen: 0 };
+  if (r === 2) { s.box = Math.min(6, s.box + 1); s.due = addDays(key, INTERVALS[Math.min(s.box - 1, INTERVALS.length - 1)]); }
+  else if (r === 1) { s.due = addDays(key, 1); }
+  else { s.box = 0; s.due = addDays(key, 1); }
+  s.seen = (s.seen || 0) + 1; d.srs[w.id] = s; saveDaily(d);
+  if (D.wi < D.words.length - 1) { D.wi++; renderDWord(); } else go(7);
+}
+function buildDQuiz(words) {
+  const ids = Object.keys(DAILY_BANK);
+  const others = id => seededShuffle(ids.filter(x => x !== id), id + todayKey()).slice(0, 2).map(x => DAILY_BANK[x]);
+  return words.map((w, i) => {
+    const type = i % 3, ds = others(w.id);
+    if (type === 0) return { stem: `<b>${esc(w.w)}</b> 的中文意思是？`, opts: seededShuffle([w.zh, ds[0].zh, ds[1].zh], w.id), ans: w.zh, fb: `${w.w} = ${w.zh}。${w.def}` };
+    if (type === 1) return { stem: `“${esc(w.zh)}” 用英语怎么说？`, opts: seededShuffle([w.w, ds[0].w, ds[1].w], w.id), ans: w.w, fb: `${w.zh} = ${w.w} ${w.ipa}` };
+    const head = w.w.replace(/\s*\(.*?\)/g, '').split(' ')[0];
+    const blanked = w.ex.replace(new RegExp(head.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[a-z]*', 'i'), '<code>____</code>');
+    return { stem: blanked.includes('<code>') ? blanked : `${esc(w.ex)}<br>这句话里的关键词是？`, opts: seededShuffle([w.w, ds[0].w, ds[1].w], w.id), ans: w.w, fb: `${w.ex}（${w.exzh}）` };
+  });
+}
+function renderDQuiz() {
+  const q = D.quiz[D.qi]; D.answered = false;
+  $('#dquiz').innerHTML = `<div class="q">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px">Q${D.qi + 1} / ${D.quiz.length}</div>
+    <p class="stem">${q.stem}</p>
+    <div class="opts">${q.opts.map((o, i) => `<button class="opt" data-v="${esc(o)}"><span class="k">${"ABC"[i]}</span>${esc(o)}</button>`).join('')}</div>
+    <div class="fb" id="dfb"></div></div>`;
+  document.querySelectorAll('#dquiz .opt').forEach(b => b.addEventListener('click', () => {
+    if (D.answered) return; D.answered = true;
+    const right = b.dataset.v === q.ans; if (right) D.right++;
+    document.querySelectorAll('#dquiz .opt').forEach(x => { x.disabled = true; if (x.dataset.v === q.ans) x.classList.add('right'); });
+    if (!right) b.classList.add('wrong');
+    const fb = $('#dfb'); fb.className = "fb on"; fb.textContent = (right ? "✅ 正确。" : "❌ 不对。") + q.fb;
+    renderBar();
+  }));
+  renderBar();
+}
+function nextDQ() { if (D.qi < D.quiz.length - 1) { D.qi++; renderDQuiz(); } else go(8); }
+function renderDDone() {
+  const d = dailyState(), key = todayKey();
+  d.log[key] = { ...(d.log[key] || {}), words: D.words.map(w => w.id), done: true, score: D.right, at: new Date().toISOString() }; saveDaily(d);
+  const n = streak(d);
+  $('#streakN2').textContent = n;
+  $('#ddoneSub').textContent = n >= 7 ? `连续 ${n} 天，已经是习惯了。` : n >= 3 ? `连续 ${n} 天，保持住。` : `明天同一时间再来，连续天数会继续累加。`;
+  $('#dquizScore').textContent = `${D.right}/5`;
+  $('#dueTomorrow').textContent = Object.values(d.srs).filter(s => s.due <= addDays(key, 1)).length;
+  $('#ddoneList').innerHTML = D.words.map(w => { const r = D.ratings[w.id], s = d.srs[w.id]; return `<div class="dw"><div><b>${esc(w.w)}</b> <small>${esc(w.zh)}</small></div><span class="st ${r === 2 ? 'ok' : r === 1 ? 'rev' : 'new'}">${r === 2 ? `${s.due.slice(5).replace('-', '/')} 再见` : '明天再来'}</span></div>`; }).join('');
+}
+
+/* ================= RESULT ================= */
+function renderDone() {
+  const known = WORDS.filter(w => S.known[w.id]).length;
+  const score = Math.round(known / 5 * 30 + S.quizRight / 3 * 30 + S.chatScore / 8 * 40);
+  $('#scoreNum').textContent = score;
+  $('#stars').textContent = score >= 85 ? "★★★" : score >= 60 ? "★★☆" : "★☆☆";
+  $('#stWords').textContent = `${known}/5`; $('#stQuiz').textContent = `${S.quizRight}/3`; $('#stChat').textContent = `${S.chatScore}/8`;
+  const main = CAST[SCENES[S.scene].main];
+  $('#noteTitle').textContent = `${main.name} 的评语`;
+  $('#noteAvatar').className = `avatar ${main.cls}`; $('#noteAvatar').textContent = main.ini;
+  $('#samNote').textContent = S.chatScore >= 7 ? T.notes.hi : S.chatScore >= 4 ? T.notes.mid : T.notes.low;
+  $('#wordsDone').innerHTML = WORDS.map(w => `<div class="wl"><div><b>${esc(w.w)}</b> <small>${esc(w.zh)}</small></div><span class="st ${S.known[w.id] ? 'ok' : 're'}">${S.known[w.id] ? '已掌握' : '需复习'}</span></div>`).join('');
+  let done = {}; try { done = JSON.parse(store.get('rt.done') || '{}'); } catch {}
+  done[`${S.role}:${S.scene}`] = score; store.set('rt.done', JSON.stringify(done));
+  $('#combos').innerHTML = Object.keys(ROLES).flatMap(r => Object.keys(SCENES).map(s => {
+    const k = `${r}:${s}`, cur = k === `${S.role}:${S.scene}`;
+    return `<div class="combo ${done[k] != null ? 'done' : ''} ${cur ? 'cur' : ''}" data-k="${k}">${esc(ROLES[r].label)}<br>${esc(SCENES[s].label)}${done[k] != null ? `<br>${done[k]} 分` : ''}</div>`;
+  })).join('');
+  document.querySelectorAll('.combo').forEach(c => c.addEventListener('click', () => { const [r, s] = c.dataset.k.split(':'); S.role = r; S.scene = s; reset(false); go(1); }));
+}
+function reset(toHome) {
+  Object.assign(S, { step: 0, wi: 0, known: {}, qi: 0, quizRight: 0, di: 0, chatScore: 0, answered: false });
+  $('#chat').innerHTML = ""; $('#choices').innerHTML = "";
+  loadTask();
+  go(toHome ? 0 : 1);
+}
+S.role = ROLES[store.get('rt.role')] ? store.get('rt.role') : "engineer";
+S.scene = SCENES[store.get('rt.scene')] ? store.get('rt.scene') : "one_on_one";
+loadTask();
+go(0);
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
