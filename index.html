@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0f766e" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0e1319" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
@@ -44,10 +44,11 @@
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); }
-  .phone { max-width: 430px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; background: var(--bg); position: relative; }
-  @media (min-width: 600px) { .phone { min-height: 0; height: min(860px, 100vh); margin-block: max(0px, calc((100vh - 860px) / 2)); border: 1px solid var(--line); border-radius: 36px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,.18); } }
+  body { overflow: hidden; }
+  .phone { max-width: 430px; margin: 0 auto; height: 100%; height: 100dvh; display: flex; flex-direction: column; background: var(--bg); position: relative; overflow: hidden; }
+  @media (min-width: 600px) { .phone { height: min(860px, 100vh); margin-block: max(0px, calc((100vh - 860px) / 2)); border: 1px solid var(--line); border-radius: 36px; box-shadow: 0 30px 60px rgba(0,0,0,.18); } }
 
-  .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 3; display: flex; align-items: center; gap: 10px; padding: 12px 16px 8px; background: var(--bg); }
+  .top { flex: none; display: flex; align-items: center; gap: 10px; padding: 12px 16px 8px; background: var(--bg); }
   .top .back { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 18px; cursor: pointer; }
   .top .back[hidden] { display: none; }
   .top .ttl { font-family: var(--display); font-weight: 600; font-size: 15px; }
@@ -55,10 +56,10 @@
   .progress { height: 4px; background: var(--line); margin: 0 16px 4px; border-radius: 2px; overflow: hidden; }
   .progress i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .4s; }
 
-  .screen { flex: 1; overflow-y: auto; padding: 8px 16px 110px; display: none; min-width: 0; }
+  .screen { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 16px 110px; display: none; min-width: 0; }
   .screen.on { display: block; }
   .bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, var(--bg) 70%, transparent); display: flex; gap: 10px; }
-  @media (max-width: 599px) { .bar { position: fixed; max-width: 430px; margin: 0 auto; } }
+  .bar:empty { display: none; }
   .btn { flex: 1; border: 0; border-radius: 14px; padding: 14px; font: 600 16px var(--display); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
   .btn.ghost { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
   .btn:disabled { opacity: .45; cursor: default; }
@@ -172,10 +173,28 @@
   .combo { font-size: 11px; text-align: center; border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px; color: var(--muted); background: var(--card); cursor: pointer; }
   .combo.done { border-color: var(--good); color: var(--good); }
   .combo.cur { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-  /* mode tabs + daily check-in */
-  .tabs { display: flex; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 4px; margin: 6px 0 14px; }
-  .tabs button { flex: 1; border: 0; background: transparent; color: var(--muted); border-radius: 10px; padding: 9px; font: 600 14px var(--display); cursor: pointer; }
-  .tabs button.on { background: var(--accent); color: var(--accent-ink); }
+  /* main menu + daily check-in */
+  .idbar { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; margin: 6px 0 18px; }
+  .idbar .avatar { width: 38px; height: 38px; font-size: 15px; }
+  .idbar b { font-family: var(--display); font-weight: 600; display: block; font-size: 15px; }
+  .idbar small { color: var(--muted); font-size: 12px; display: block; }
+  .idbar .chg { margin-left: auto; border: 1px solid var(--line); background: transparent; color: var(--accent); border-radius: 999px; padding: 6px 12px; font: 600 13px var(--display); cursor: pointer; flex: none; }
+  .entries { display: grid; gap: 12px; }
+  .entry { display: flex; gap: 14px; align-items: center; width: 100%; text-align: left; background: var(--card); border: 1.5px solid var(--line); border-radius: 20px; padding: 18px 16px; cursor: pointer; font: inherit; color: var(--ink); }
+  .entry:active { border-color: var(--accent); }
+  .entry .ic { font-size: 30px; width: 44px; text-align: center; flex: none; }
+  .entry b { font-family: var(--display); font-weight: 600; font-size: 17px; display: block; }
+  .entry small { color: var(--muted); font-size: 13px; display: block; margin-top: 3px; }
+  .entry .arrow { margin-left: auto; color: var(--muted); font-size: 24px; flex: none; }
+  .entry .badge { font-family: var(--mono); font-size: 11px; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+  .mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .mini div { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px; text-align: center; }
+  .mini b { font: 600 20px var(--display); display: block; font-variant-numeric: tabular-nums; }
+  .mini small { color: var(--muted); font-size: 12px; }
+  .preview { margin-top: 18px; }
+  .preview .who { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .preview .who span { display: inline-flex; align-items: center; gap: 6px; }
+  .preview .avatar { width: 28px; height: 28px; font-size: 12px; }
   .streak { display: flex; align-items: center; gap: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px 18px; }
   .streak .n { font: 700 44px/1 var(--display); font-variant-numeric: tabular-nums; }
   .streak .l { color: var(--muted); font-size: 13px; }
@@ -214,12 +233,11 @@
   </div>
   <div class="progress"><i id="prog"></i></div>
 
-  <!-- 0 HOME -->
-  <section class="screen on" id="s-home">
-    <div class="tabs"><button class="on" id="tabMission">🎯 任务练习</button><button id="tabDaily">📅 每日打卡</button></div>
-    <div class="eyebrow">MISSION 01</div>
-    <h1>机械臂停机了</h1>
-    <p class="lead">The arm stopped. 测试中机械臂突然停下，周四有客户演示，周五是里程碑验收。同一件事，不同身份、不同场合，要说的英语完全不同。</p>
+  <!-- SETUP: choose identity + scene -->
+  <section class="screen on" id="s-setup">
+    <div class="eyebrow">WELCOME</div>
+    <h1>先告诉我你是谁</h1>
+    <p class="lead">RoboTutor 会按你的身份和要练的场合，给你不同的单词和对话。以后随时可以在首页更换。</p>
 
     <h2>你的身份</h2>
     <div class="picker" id="roles">
@@ -228,12 +246,46 @@
       <button class="pick" data-r="pjm"><span class="ic">📅</span><b>项目经理</b><small>工期、风险、沟通</small></button>
     </div>
 
-    <h2>场景</h2>
+    <h2>要练的场合</h2>
     <div class="picker" id="scenes">
       <button class="pick" data-s="one_on_one"><span class="ic">💬</span><b>一对一</b><small>实验室里和 Sam 谈</small></button>
       <button class="pick" data-s="meeting"><span class="ic">🧑‍🤝‍🧑</span><b>团队会议</b><small>周一例会上发言</small></button>
       <button class="pick" data-s="presentation"><span class="ic">🎤</span><b>客户演示</b><small>向 Mr. Tanaka 汇报</small></button>
     </div>
+
+    <div class="task preview" id="setupPreview" hidden>
+      <div class="tt" id="setupTitle"></div>
+      <div class="setting" id="setupSetting"></div>
+      <div class="who" id="setupWho"></div>
+    </div>
+  </section>
+
+  <!-- MENU: what to practice today -->
+  <section class="screen" id="s-menu">
+    <div class="idbar">
+      <div class="avatar you" id="menuAva">L</div>
+      <div><b id="menuWho"></b><small id="menuScene"></small></div>
+      <button class="chg" id="chg">更换</button>
+    </div>
+    <div class="eyebrow">TODAY</div>
+    <h1>今天练什么？</h1>
+    <div class="entries">
+      <button class="entry" id="goMission"><span class="ic">🎯</span><div><b>场景练习</b><small id="missionSub"></small></div><span class="arrow">›</span></button>
+      <button class="entry" id="goDaily"><span class="ic">📚</span><div><b>背单词 · 每日打卡</b><small id="dailySub"></small></div><span class="arrow">›</span></button>
+    </div>
+    <h2>我的进度</h2>
+    <div class="mini">
+      <div><b id="mStreak">0</b><small>连续打卡</small></div>
+      <div><b id="mWords">0</b><small>学过的词</small></div>
+      <div><b id="mCombos">0/9</b><small>练过的场景</small></div>
+    </div>
+  </section>
+
+  <!-- MISSION BRIEF -->
+  <section class="screen" id="s-home">
+    <div class="eyebrow">MISSION 01</div>
+    <h1>机械臂停机了</h1>
+    <p class="lead">The arm stopped. 测试中机械臂突然停下，周四有客户演示，周五是里程碑验收。</p>
 
     <div class="task">
       <div class="tt" id="taskTitle"></div>
@@ -296,7 +348,6 @@
 
   <!-- 5 DAILY HUB -->
   <section class="screen" id="s-daily">
-    <div class="tabs"><button id="tabMission2">🎯 任务练习</button><button class="on">📅 每日打卡</button></div>
     <div class="eyebrow" id="dailyDate"></div>
     <h1>每日单词打卡</h1>
     <p class="lead">每天 5 个词：先复习到期的，再补新词。翻卡自评，再做 5 道小测，就算打卡成功。</p>
@@ -690,19 +741,18 @@ const TASKS = {
 };
 
 /* ================= STATE ================= */
-const S = { role:"engineer", scene:"one_on_one", step:0, wi:0, known:{}, qi:0, quizRight:0, di:0, chatScore:0, answered:false };
+const S = { role:null, scene:null, step:"s-setup", wi:0, known:{}, qi:0, quizRight:0, di:0, chatScore:0, answered:false };
 let T = null, WORDS = [], QUIZ = [], DIALOG = [];
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const STEPS = ["s-home","s-words","s-quiz","s-chat","s-done","s-daily","s-dword","s-dquiz","s-ddone"];
-const TITLES = ["任务一","学词","快测","场景对话","完成","每日打卡","翻卡自评","小测","打卡成功"];
+const MISSION = ["s-home","s-words","s-quiz","s-chat","s-done"], DAILY = ["s-daily","s-dword","s-dquiz","s-ddone"];
+const TITLES = {"s-setup":"RoboTutor","s-menu":"RoboTutor","s-home":"任务一","s-words":"学词","s-quiz":"快测","s-chat":"场景对话","s-done":"完成","s-daily":"每日打卡","s-dword":"翻卡自评","s-dquiz":"小测","s-ddone":"打卡成功"};
+const BACK = {"s-home":"s-menu","s-words":"s-home","s-quiz":"s-words","s-chat":"s-quiz","s-daily":"s-menu","s-dword":"s-daily","s-dquiz":"s-dword"};
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 
 function loadTask() {
   T = TASKS[`${S.role}:${S.scene}`]; WORDS = T.words.map(id => ({id, ...W[id]})); QUIZ = T.quiz; DIALOG = T.dialog;
   const R = ROLES[S.role], SC = SCENES[S.scene];
-  document.querySelectorAll('#roles .pick').forEach(b => b.classList.toggle('on', b.dataset.r === S.role));
-  document.querySelectorAll('#scenes .pick').forEach(b => b.classList.toggle('on', b.dataset.s === S.scene));
   $('#taskTitle').textContent = `${R.label} · ${SC.title}`;
   $('#taskSetting').textContent = SC.setting;
   $('#goals').innerHTML = T.goals.map(g => `<li>${esc(g)}</li>`).join('');
@@ -716,46 +766,68 @@ function loadTask() {
   $('#goalbar').innerHTML = T.chips.map((c, i) => `<span data-g="${i}">${esc(c)}</span>`).join('');
   $('#doneEyebrow').textContent = `MISSION 01 · ${R.label} · ${SC.label} · 完成`;
   store.set('rt.role', S.role); store.set('rt.scene', S.scene);
-  if (S.step === 0) renderBar();
 }
-document.querySelectorAll('#roles .pick').forEach(b => b.addEventListener('click', () => { S.role = b.dataset.r; loadTask(); }));
-document.querySelectorAll('#scenes .pick').forEach(b => b.addEventListener('click', () => { S.scene = b.dataset.s; loadTask(); }));
+function renderSetup() {
+  document.querySelectorAll('#roles .pick').forEach(b => b.classList.toggle('on', b.dataset.r === S.role));
+  document.querySelectorAll('#scenes .pick').forEach(b => b.classList.toggle('on', b.dataset.s === S.scene));
+  const ready = S.role && S.scene;
+  $('#setupPreview').hidden = !ready;
+  if (ready) {
+    const R = ROLES[S.role], SC = SCENES[S.scene];
+    $('#setupTitle').textContent = `${R.label} · ${SC.title}`;
+    $('#setupSetting').textContent = SC.setting;
+    $('#setupWho').innerHTML = `<span><div class="avatar you">${esc(R.you.ini)}</div>你是 ${esc(R.you.name)}</span><span>对话对象：</span>` + SC.cast.map(id => `<span><div class="avatar ${CAST[id].cls}">${CAST[id].ini}</div>${esc(CAST[id].name)}</span>`).join('');
+  }
+}
+document.querySelectorAll('#roles .pick').forEach(b => b.addEventListener('click', () => { S.role = b.dataset.r; renderSetup(); renderBar(); }));
+document.querySelectorAll('#scenes .pick').forEach(b => b.addEventListener('click', () => { S.scene = b.dataset.s; renderSetup(); renderBar(); }));
+function finishSetup() { loadTask(); store.set('rt.setup', '1'); go('s-menu'); }
+function renderMenu() {
+  const R = ROLES[S.role], SC = SCENES[S.scene];
+  $('#menuAva').textContent = R.you.ini;
+  $('#menuWho').textContent = `${R.you.name} · ${R.label}`;
+  $('#menuScene').textContent = SC.title + ' · ' + SC.cast.map(id => CAST[id].name).join(' & ');
+  let done = {}; try { done = JSON.parse(store.get('rt.done') || '{}'); } catch {}
+  const score = done[`${S.role}:${S.scene}`];
+  $('#missionSub').innerHTML = `任务一 · 机械臂停机了 · ${esc(SC.label)}` + (score != null ? `<span class="badge">上次 ${score} 分</span>` : ` · 约 6 分钟`);
+  const d = dailyState(), key = todayKey(), today = d.log[key], n = streak(d);
+  $('#dailySub').innerHTML = (today && today.done) ? `今日已打卡 ✓ · 连续 ${n} 天` : `今日 5 词待打卡` + (n ? ` · 已连续 ${n} 天` : '');
+  $('#mStreak').textContent = n; $('#mWords').textContent = Object.keys(d.srs).length; $('#mCombos').textContent = `${Object.keys(done).length}/9`;
+}
+$('#chg').addEventListener('click', () => go('s-setup'));
+$('#goMission').addEventListener('click', () => go('s-home'));
+$('#goDaily').addEventListener('click', () => go('s-daily'));
 
-function go(n) {
-  S.step = n;
-  STEPS.forEach((id, i) => $('#' + id).classList.toggle('on', i === n));
-  $('#ttl').textContent = TITLES[n];
-  const daily = n >= 5;
-  $('#stepLbl').textContent = n === 0 || n === 4 || n === 5 || n === 8 ? "" : daily ? `${n - 5}/2` : `STEP ${n}/3`;
-  $('#prog').style.width = (daily ? (n - 5) / 3 * 100 : n / 4 * 100) + "%";
-  $('#back').hidden = n === 0 || n === 4 || n === 8;
-  STEPS.forEach(id => $('#' + id).scrollTop = 0);
-  if (n === 1) renderWord();
-  if (n === 2) renderQuiz();
-  if (n === 3) startChat();
-  if (n === 4) renderDone();
-  if (n === 5) renderDaily();
-  if (n === 6) renderDWord();
-  if (n === 7) renderDQuiz();
-  if (n === 8) renderDDone();
+const RENDER = { "s-setup": renderSetup, "s-menu": renderMenu, "s-home": loadTask, "s-words": renderWord, "s-quiz": renderQuiz, "s-chat": startChat, "s-done": renderDone, "s-daily": renderDaily, "s-dword": renderDWord, "s-dquiz": renderDQuiz, "s-ddone": renderDDone };
+function go(id) {
+  if (id !== "s-setup" && !(S.role && S.scene)) id = "s-setup";
+  S.step = id;
+  document.querySelectorAll('.screen').forEach(el => el.classList.toggle('on', el.id === id));
+  $('#ttl').textContent = TITLES[id];
+  const mi = MISSION.indexOf(id), di = DAILY.indexOf(id);
+  $('#stepLbl').textContent = (mi > 0 && mi < 4) ? `STEP ${mi}/3` : (di > 0 && di < 3) ? `${di}/2` : "";
+  $('#prog').style.width = (mi > 0 ? mi / 4 * 100 : di > 0 ? di / 3 * 100 : 0) + "%";
+  $('#back').hidden = !BACK[id];
+  document.querySelectorAll('.screen').forEach(el => el.scrollTop = 0);
+  RENDER[id]();
   renderBar();
 }
-$('#back').addEventListener('click', () => go(S.step === 5 ? 0 : S.step === 6 ? 5 : Math.max(0, S.step - 1)));
-$('#tabDaily').addEventListener('click', () => go(5));
-$('#tabMission2').addEventListener('click', () => go(0));
+$('#back').addEventListener('click', () => go(BACK[S.step] || 's-menu'));
 
 function renderBar() {
   const bar = $('#bar'); bar.innerHTML = "";
   const mk = (label, fn, cls = "btn", dis = false) => { const b = document.createElement('button'); b.className = cls; b.textContent = label; b.disabled = dis; b.addEventListener('click', fn); bar.appendChild(b); return b; };
-  if (S.step === 0) mk(`以${ROLES[S.role].label}身份开始`, () => go(1));
-  if (S.step === 1) { mk("不认识", () => rate(false), "btn ghost"); mk("认识", () => rate(true)); }
-  if (S.step === 2) mk(S.qi < QUIZ.length - 1 ? "下一题" : "进入场景", nextQ, "btn", !S.answered);
-  if (S.step === 3) mk("查看结果", () => go(4), "btn", S.di < DIALOG.length);
-  if (S.step === 4) { mk("换个身份或场景", () => reset(true), "btn ghost"); mk("再来一次", () => reset(false)); }
-  if (S.step === 5) { const d = dailyState(), today = d.log[todayKey()]; mk(today && today.done ? "今天已打卡 · 再练一遍" : "开始今日打卡", startDaily, today && today.done ? "btn ghost" : "btn"); }
-  if (S.step === 6) { mk("不认识", () => dRate(0), "btn ghost"); mk("模糊", () => dRate(1), "btn ghost"); mk("认识", () => dRate(2)); }
-  if (S.step === 7) mk(D.qi < D.quiz.length - 1 ? "下一题" : "完成打卡", nextDQ, "btn", !D.answered);
-  if (S.step === 8) mk("回到打卡页", () => go(5));
+  const st = S.step;
+  if (st === "s-setup") mk(S.role && S.scene ? "进入" : "先选身份和场合", finishSetup, "btn", !(S.role && S.scene));
+  if (st === "s-home") mk(`以${ROLES[S.role].label}身份开始`, () => go("s-words"));
+  if (st === "s-words") { mk("不认识", () => rate(false), "btn ghost"); mk("认识", () => rate(true)); }
+  if (st === "s-quiz") mk(S.qi < QUIZ.length - 1 ? "下一题" : "进入场景", nextQ, "btn", !S.answered);
+  if (st === "s-chat") mk("查看结果", () => go("s-done"), "btn", S.di < DIALOG.length);
+  if (st === "s-done") { mk("回首页", () => reset("s-menu"), "btn ghost"); mk("再来一次", () => reset("s-words")); }
+  if (st === "s-daily") { const d = dailyState(), today = d.log[todayKey()]; mk(today && today.done ? "今天已打卡 · 再练一遍" : "开始今日打卡", startDaily, today && today.done ? "btn ghost" : "btn"); }
+  if (st === "s-dword") { mk("不认识", () => dRate(0), "btn ghost"); mk("模糊", () => dRate(1), "btn ghost"); mk("认识", () => dRate(2)); }
+  if (st === "s-dquiz") mk(D.qi < D.quiz.length - 1 ? "下一题" : "完成打卡", nextDQ, "btn", !D.answered);
+  if (st === "s-ddone") { mk("回首页", () => go("s-menu"), "btn ghost"); mk("打卡页", () => go("s-daily")); }
 }
 
 /* ================= WORDS ================= */
@@ -776,7 +848,7 @@ function renderWord() {
 }
 function rate(known) {
   S.known[WORDS[S.wi].id] = known;
-  if (S.wi < WORDS.length - 1) { S.wi++; renderWord(); } else go(2);
+  if (S.wi < WORDS.length - 1) { S.wi++; renderWord(); } else go("s-quiz");
 }
 
 /* ================= QUIZ ================= */
@@ -797,7 +869,7 @@ function renderQuiz() {
   }));
   renderBar();
 }
-function nextQ() { if (S.qi < QUIZ.length - 1) { S.qi++; renderQuiz(); } else go(3); }
+function nextQ() { if (S.qi < QUIZ.length - 1) { S.qi++; renderQuiz(); } else go("s-chat"); }
 
 /* ================= CHAT ================= */
 function scrollChat() { const s = $('#s-chat'); s.scrollTop = s.scrollHeight; }
@@ -876,7 +948,7 @@ function renderDaily() {
 function startDaily() {
   D.words = pickToday().map(id => ({ id, ...DAILY_BANK[id] })); D.wi = 0; D.ratings = {}; D.qi = 0; D.right = 0; D.answered = false;
   D.quiz = buildDQuiz(D.words);
-  go(6);
+  go("s-dword");
 }
 function renderDWord() {
   const w = D.words[D.wi];
@@ -902,7 +974,7 @@ function dRate(r) {
   else if (r === 1) { s.due = addDays(key, 1); }
   else { s.box = 0; s.due = addDays(key, 1); }
   s.seen = (s.seen || 0) + 1; d.srs[w.id] = s; saveDaily(d);
-  if (D.wi < D.words.length - 1) { D.wi++; renderDWord(); } else go(7);
+  if (D.wi < D.words.length - 1) { D.wi++; renderDWord(); } else go("s-dquiz");
 }
 function buildDQuiz(words) {
   const ids = Object.keys(DAILY_BANK);
@@ -933,7 +1005,7 @@ function renderDQuiz() {
   }));
   renderBar();
 }
-function nextDQ() { if (D.qi < D.quiz.length - 1) { D.qi++; renderDQuiz(); } else go(8); }
+function nextDQ() { if (D.qi < D.quiz.length - 1) { D.qi++; renderDQuiz(); } else go("s-ddone"); }
 function renderDDone() {
   const d = dailyState(), key = todayKey();
   d.log[key] = { ...(d.log[key] || {}), words: D.words.map(w => w.id), done: true, score: D.right, at: new Date().toISOString() }; saveDaily(d);
@@ -963,18 +1035,18 @@ function renderDone() {
     const k = `${r}:${s}`, cur = k === `${S.role}:${S.scene}`;
     return `<div class="combo ${done[k] != null ? 'done' : ''} ${cur ? 'cur' : ''}" data-k="${k}">${esc(ROLES[r].label)}<br>${esc(SCENES[s].label)}${done[k] != null ? `<br>${done[k]} 分` : ''}</div>`;
   })).join('');
-  document.querySelectorAll('.combo').forEach(c => c.addEventListener('click', () => { const [r, s] = c.dataset.k.split(':'); S.role = r; S.scene = s; reset(false); go(1); }));
+  document.querySelectorAll('.combo').forEach(c => c.addEventListener('click', () => { const [r, s] = c.dataset.k.split(':'); S.role = r; S.scene = s; reset("s-words"); }));
 }
-function reset(toHome) {
-  Object.assign(S, { step: 0, wi: 0, known: {}, qi: 0, quizRight: 0, di: 0, chatScore: 0, answered: false });
+function reset(to) {
+  Object.assign(S, { wi: 0, known: {}, qi: 0, quizRight: 0, di: 0, chatScore: 0, answered: false });
   $('#chat').innerHTML = ""; $('#choices').innerHTML = "";
   loadTask();
-  go(toHome ? 0 : 1);
+  go(to);
 }
-S.role = ROLES[store.get('rt.role')] ? store.get('rt.role') : "engineer";
-S.scene = SCENES[store.get('rt.scene')] ? store.get('rt.scene') : "one_on_one";
-loadTask();
-go(0);
+S.role = ROLES[store.get('rt.role')] ? store.get('rt.role') : null;
+S.scene = SCENES[store.get('rt.scene')] ? store.get('rt.scene') : null;
+if (S.role && S.scene) loadTask();
+go(store.get('rt.setup') && S.role && S.scene ? "s-menu" : "s-setup");
 </script>
 
 <script>
