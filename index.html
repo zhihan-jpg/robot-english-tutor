@@ -190,9 +190,6 @@
   .mini div { padding: 6px 0; text-align: left; }
   .mini b { font: 600 22px var(--display); display: block; font-variant-numeric: tabular-nums; }
   .mini small { color: var(--muted); font-size: 11px; }
-  .preview .who { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-top: 12px; font-size: 13px; color: var(--muted); }
-  .preview .who span { display: inline-flex; align-items: center; gap: 6px; }
-  .preview .who .avatar { width: 24px; height: 24px; font-size: 10px; }
 
   /* daily */
   .streak { display: flex; align-items: flex-end; gap: 16px; padding: 8px 0 18px; border-bottom: 1px solid var(--line); }
@@ -251,11 +248,6 @@
       <button class="pick" data-s="presentation"><b>客户演示</b><small>向 Mr. Tanaka 汇报</small></button>
     </div>
 
-    <div class="task preview" id="setupPreview" hidden>
-      <div class="tt" id="setupTitle"></div>
-      <div class="setting" id="setupSetting"></div>
-      <div class="who" id="setupWho"></div>
-    </div>
   </section>
 
   <!-- MENU: what to practice today -->
@@ -768,14 +760,6 @@ function loadTask() {
 function renderSetup() {
   document.querySelectorAll('#roles .pick').forEach(b => b.classList.toggle('on', b.dataset.r === S.role));
   document.querySelectorAll('#scenes .pick').forEach(b => b.classList.toggle('on', b.dataset.s === S.scene));
-  const ready = S.role && S.scene;
-  $('#setupPreview').hidden = !ready;
-  if (ready) {
-    const R = ROLES[S.role], SC = SCENES[S.scene];
-    $('#setupTitle').textContent = `${R.label} · ${SC.title}`;
-    $('#setupSetting').textContent = SC.setting;
-    $('#setupWho').innerHTML = `<span><div class="avatar you">${esc(R.you.ini)}</div>你是 ${esc(R.you.name)}</span><span>对话对象：</span>` + SC.cast.map(id => `<span><div class="avatar ${CAST[id].cls}">${CAST[id].ini}</div>${esc(CAST[id].name)}</span>`).join('');
-  }
 }
 document.querySelectorAll('#roles .pick').forEach(b => b.addEventListener('click', () => { S.role = b.dataset.r; renderSetup(); renderBar(); }));
 document.querySelectorAll('#scenes .pick').forEach(b => b.addEventListener('click', () => { S.scene = b.dataset.s; renderSetup(); renderBar(); }));
@@ -816,7 +800,7 @@ function renderBar() {
   const bar = $('#bar'); bar.innerHTML = "";
   const mk = (label, fn, cls = "btn", dis = false) => { const b = document.createElement('button'); b.className = cls; b.textContent = label; b.disabled = dis; b.addEventListener('click', fn); bar.appendChild(b); return b; };
   const st = S.step;
-  if (st === "s-setup") mk(S.role && S.scene ? "进入" : "先选身份和场合", finishSetup, "btn", !(S.role && S.scene));
+  if (st === "s-setup") mk(S.role && S.scene ? `进入 · ${ROLES[S.role].label} · ${SCENES[S.scene].label}` : S.role ? "再选一个场合" : S.scene ? "再选一个身份" : "先选身份和场合", finishSetup, "btn", !(S.role && S.scene));
   if (st === "s-home") mk(`以${ROLES[S.role].label}身份开始`, () => go("s-words"));
   if (st === "s-words") { mk("不认识", () => rate(false), "btn ghost"); mk("认识", () => rate(true)); }
   if (st === "s-quiz") mk(S.qi < QUIZ.length - 1 ? "下一题" : "进入场景", nextQ, "btn", !S.answered);
