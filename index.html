@@ -47,9 +47,9 @@
   body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 var(--body); overflow: hidden; -webkit-font-smoothing: antialiased; }
   button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
   .phone { max-width: 430px; margin: 0 auto; height: 100%; height: 100dvh; display: flex; flex-direction: column; background: var(--bg); position: relative; overflow: hidden; }
-  @media (min-width: 600px) { .phone { height: min(860px, 100vh); margin-block: max(0px, calc((100vh - 860px) / 2)); border: 1px solid var(--line); border-radius: 32px; box-shadow: var(--shadow-lg); } }
+  @media (min-width: 600px) { .phone { height: min(760px, 100vh - 32px); margin-block: max(16px, calc((100vh - 760px) / 2)); border: 1px solid var(--line); border-radius: 32px; box-shadow: var(--shadow-lg); } }
 
-  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes rise { from { opacity: .35; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
   @keyframes blink { 0%, 60%, 100% { opacity: .25 } 30% { opacity: 1 } }
 
@@ -63,7 +63,15 @@
   .progress i { display: block; height: 100%; background: var(--ink); width: 0; transition: width .5s var(--ease); }
 
   .screen { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 20px 110px; display: none; min-width: 0; }
-  .screen.on { display: block; animation: rise .35s var(--ease); }
+  .screen.on { display: flex; flex-direction: column; animation: rise .35s var(--ease); }
+  .screen > * { flex: none; }
+  .screen.on > .picker { flex: 1 0 auto; min-height: 104px; max-height: 176px; }
+  .screen.on > .entries { flex: 1 0 auto; max-height: 320px; }
+  .phone:has(.bar:empty) .screen { padding-bottom: 24px; }
+  .screen.on > .deck { flex: 1 0 auto; display: flex; margin-top: 8px; }
+  .deck .wcard { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .screen.on > .dots { padding: 4px 0 8px; }
+  .screen.on > #dquiz { margin-block: auto; }
   .bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 20px calc(16px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, var(--bg) 70%, transparent); display: flex; gap: 8px; }
   .bar:empty { display: none; }
   .btn { flex: 1; border: 1px solid var(--accent); border-radius: 14px; padding: 15px; font: 500 15px var(--body); background: var(--accent); color: var(--accent-ink); cursor: pointer; box-shadow: var(--shadow); transition: transform .15s var(--ease), box-shadow .15s, opacity .2s; }
@@ -72,7 +80,7 @@
   .btn:disabled { opacity: .35; cursor: default; box-shadow: none; }
   .btn:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
-  h1 { font: 600 24px/1.25 var(--display); margin: 6px 0 6px; text-wrap: balance; letter-spacing: -.01em; }
+  h1 { font: 600 26px/1.25 var(--display); margin: 6px 0 6px; text-wrap: balance; letter-spacing: -.01em; }
   h2 { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 24px 0 10px; }
   .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--muted); }
   .lead { color: var(--muted); margin: 0 0 8px; font-size: 14px; }
@@ -80,9 +88,9 @@
   .task, .q, .wcard, .idbar, .entry, .mini, .streak, .pick, .opt, .choice { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
 
   .picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .pick { padding: 22px 8px 18px; text-align: center; cursor: pointer; display: grid; gap: 4px; justify-items: center; position: relative; transition: transform .15s var(--ease), border-color .2s, box-shadow .2s; }
+  .pick { padding: 20px 8px; text-align: center; cursor: pointer; display: grid; gap: 4px; justify-items: center; align-content: center; position: relative; transition: transform .15s var(--ease), border-color .2s, box-shadow .2s; }
   .pick .ic { display: none; }
-  .pick b { font-weight: 600; font-size: 15px; }
+  .pick b { font-weight: 600; font-size: 16px; }
   .pick small { color: var(--muted); font-size: 11px; line-height: 1.4; }
   .pick:active { transform: scale(.96); }
   .pick.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink), var(--shadow-lg); }
@@ -109,7 +117,7 @@
   .person .role { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; color: var(--muted); }
 
   /* word cards */
-  .deck { position: relative; min-height: 360px; }
+  .deck { position: relative; }
   .wcard { padding: 24px 20px 20px; box-shadow: var(--shadow-lg); }
   .wcard .cat { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; color: var(--muted); }
   .wcard .w { font: 600 30px/1.1 var(--display); margin: 10px 0 2px; word-break: break-word; letter-spacing: -.01em; }
@@ -202,7 +210,7 @@
   .idbar .chg { margin-left: auto; border: 1px solid var(--line); background: var(--soft); border-radius: 999px; padding: 6px 13px; font-size: 12px; cursor: pointer; flex: none; color: var(--ink); transition: transform .15s var(--ease); }
   .idbar .chg:active { transform: scale(.94); }
   .entries { display: grid; gap: 12px; margin-top: 14px; }
-  .entry { display: flex; gap: 14px; align-items: center; width: 100%; text-align: left; padding: 24px 18px; cursor: pointer; border-radius: 18px; transition: transform .15s var(--ease), box-shadow .2s, border-color .2s; }
+  .entry { display: flex; gap: 14px; align-items: center; width: 100%; text-align: left; padding: 22px 20px; min-height: 96px; cursor: pointer; border-radius: 18px; transition: transform .15s var(--ease), box-shadow .2s, border-color .2s; }
   .entry:active { transform: scale(.98); box-shadow: none; border-color: var(--ink); }
   .entry .ic { display: none; }
   .entry b { font-weight: 600; font-size: 18px; display: block; }
@@ -211,14 +219,14 @@
   .entry:active .arrow { transform: translateX(4px); }
   .entry .badge { font-family: var(--mono); font-size: 11px; color: var(--ink); margin-left: 8px; }
   .mini { display: grid; grid-template-columns: repeat(3, 1fr); overflow: hidden; }
-  .mini div { padding: 14px 6px; text-align: center; border-left: 1px solid var(--line); }
+  .mini div { padding: 18px 6px; text-align: center; border-left: 1px solid var(--line); }
   .mini div:first-child { border-left: 0; }
   .mini b { font: 600 22px var(--display); display: block; font-variant-numeric: tabular-nums; }
   .mini small { color: var(--muted); font-size: 11px; }
-  .foot { margin-top: 28px; text-align: center; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--muted); }
+  .foot { margin-top: auto; padding-top: 28px; text-align: center; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--muted); }
 
   /* daily */
-  .streak { display: flex; align-items: flex-end; gap: 16px; padding: 18px; }
+  .streak { display: flex; align-items: flex-end; gap: 16px; padding: 22px 20px; }
   .streak .n { font: 600 48px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
   .streak .l { color: var(--muted); font-size: 12px; margin-top: 6px; }
   .streak .r { margin-left: auto; text-align: right; font-size: 11px; color: var(--muted); line-height: 1.4; }
@@ -386,7 +394,7 @@
     </div>
     <h2>今日单词</h2>
     <div class="words" id="ddoneList"></div>
-    <p class="lead" style="margin-top:16px;font-size:13px">记得的词会隔 1 → 2 → 4 → 7 → 15 → 30 天再出现；不记得的明天再来。连续 6 次记得就算掌握。</p>
+    <p class="lead foot" style="text-align:left;font-family:var(--body);letter-spacing:0;font-size:13px">记得的词会隔 1 → 2 → 4 → 7 → 15 → 30 天再出现；不记得的明天再来。连续 6 次记得就算掌握。</p>
   </section>
 
   <div class="bar" id="bar"></div>
