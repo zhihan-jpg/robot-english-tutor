@@ -289,7 +289,7 @@
   <section class="screen" id="s-menu">
     <div class="idbar">
       <div class="avatar you" id="menuAva">L</div>
-      <div><b id="menuWho"></b><small id="menuScene"></small></div>
+      <div><b id="menuWho"></b></div>
       <button class="chg" id="chg">更换</button>
     </div>
     <div class="eyebrow">TODAY</div>
@@ -783,7 +783,6 @@ function renderMenu() {
   const R = ROLES[S.role], SC = SCENES[S.scene];
   $('#menuAva').textContent = R.you.ini;
   $('#menuWho').textContent = `${R.you.name} · ${R.label}`;
-  $('#menuScene').textContent = SC.title + ' · ' + SC.cast.map(id => CAST[id].name).join(' & ');
   let done = {}; try { done = JSON.parse(store.get('rt.done') || '{}'); } catch {}
   const d = dailyState(), key = todayKey(), today = d.log[key], n = streak(d);
   $('#mStreak').textContent = n; $('#mWords').textContent = Object.keys(d.srs).length; $('#mCombos').textContent = `${Object.keys(done).length}/9`;
