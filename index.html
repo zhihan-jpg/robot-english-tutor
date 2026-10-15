@@ -403,14 +403,14 @@
 /* ================= CAST & SCENES ================= */
 const CAST = {
   sam:    {ini:"S", cls:"sam",    name:"Sam",        role:"高级机器人工程师", desc:"负责排查这次故障。直接、务实，喜欢先问“能不能复现”。听不懂含糊的描述，也不喜欢被催。"},
-  priya:  {ini:"P", cls:"priya",  name:"Priya",      role:"团队负责人 · 例会主持", desc:"每周一主持例会。喜欢三句话以内的汇报，每个议题结束时一定要有 owner 和时间。细节会让她打断你。"},
-  tanaka: {ini:"T", cls:"tanaka", name:"Mr. Tanaka", role:"客户工厂厂长", desc:"关心安全、产线节拍和验收日期，对机器人半信半疑。讨厌 “don't worry”，尊重坦诚和数据。"}
+  priya:  {ini:"P", cls:"priya",  name:"Priya",      role:"团队负责人 · 例会主持", desc:"每周一主持例会。喜欢三句话以内的汇报，每个议题结束时一定要有负责人和时间。细节会让她打断你。"},
+  tanaka: {ini:"T", cls:"tanaka", name:"Mr. Tanaka", role:"客户工厂厂长", desc:"关心安全、产线节拍和验收日期，对机器人半信半疑。讨厌含糊的安抚，尊重坦诚和数据。"}
 };
 const SCENES = {
   one_on_one:   {label:"一对一",  title:"实验室一对一",  cast:["sam"],          main:"sam",
                  setting:"实验室里，Sam 走过来问你机械臂的事。没有旁人，可以讲细节，但要讲清楚。"},
   meeting:      {label:"团队会议", title:"周一团队例会",  cast:["priya","sam"],  main:"priya",
-                 setting:"周一例会，Priya 主持，Sam 和其他五个人在场。每个议题只有两三分钟，细节要 take offline。"},
+                 setting:"周一例会，Priya 主持，Sam 和其他五个人在场。每个议题只有两三分钟，细节要留到会后。"},
   presentation: {label:"客户演示", title:"周四客户演示",  cast:["tanaka"],       main:"tanaka",
                  setting:"周四，客户厂长 Mr. Tanaka 带着两位工程师来看演示。机械臂的问题还没彻底解决，你站在前面讲。"}
 };
@@ -523,7 +523,7 @@ const TASKS = {
 "engineer:meeting": {
   goals:["学会 5 个会上汇报必用的词","通过 3 道快测","在例会上用三句话说清状态，细节 take offline"], wordsTitle:"例会汇报的 5 个词",
   chatTitle:"例会上汇报", chatLead:"Priya 点到你。会上每个人只有两三分钟，Sam 可能插话问细节。",
-  chips:["简短汇报","是否 blocker","细节 offline","ETA 与需求"], words:["blocker","root_cause","workaround","eta","take_offline"],
+  chips:["三句话说清状态","明确是否卡点","细节留到会后","给出时间和需求"], words:["blocker","root_cause","workaround","eta","take_offline"],
   quiz:[
   {stem:"“这个细节我们会后单独聊” 怎么说？",hint:"会议上被追问细节时的标准回应。",opts:["take it offline","wrap it up","call it a day"],ans:0,fb:"take it offline 会后单聊。wrap it up 是收尾，call it a day 是今天到此为止。"},
   {stem:"We have a <code>____</code> for the demo, but no root cause yet.",hint:"先绕过去的方案叫什么？",opts:["workaround","blocker","milestone"],ans:0,fb:"workaround。blocker 是卡点，milestone 是里程碑。"},
@@ -607,7 +607,7 @@ const TASKS = {
 "pm:meeting": {
   goals:["学会 5 个会上做决定必用的词","通过 3 道快测","在例会上说影响、定优先级、认领行动项"], wordsTitle:"会上做决定的 5 个词",
   chatTitle:"例会上发言", chatLead:"Priya 问产品侧的意见。Sam 会说出代价，你要做取舍、认领行动项、想到相关方。",
-  chips:["说影响定优先级","做 scope 取舍","认领 action item","对齐 stakeholder"], words:["priority","scope","action_item","align","stakeholder"],
+  chips:["说影响、定优先级","明确范围取舍","认领行动项","对齐相关方"], words:["priority","scope","action_item","align","stakeholder"],
   quiz:[
   {stem:"“行动项”对应哪个词？",hint:"会后某人要去做的具体事。",opts:["action item","agenda","milestone"],ans:0,fb:"action item。agenda 是议程，milestone 是里程碑。"},
   {stem:"Let's <code>____</code> on what the customer actually needs before we change anything.",hint:"达成一致。",opts:["escalate","align","deploy"],ans:1,fb:"align 对齐。escalate 上报，deploy 部署。"},
@@ -635,7 +635,7 @@ const TASKS = {
 "pm:presentation": {
   goals:["学会 5 个面向客户讲产品必用的词","通过 3 道快测","从客户 use case 出发讲清限制，承诺有边界"], wordsTitle:"客户演示的 5 个词",
   chatTitle:"向客户演示", chatLead:"你代表产品向客户介绍。有的轮次是舞台提示，由你开口；有的轮次是 Mr. Tanaka 的追问。",
-  chips:["从 use case 开场","说清 limitation","承诺有边界","要 feedback 定下一步"], words:["use_case","roadmap","limitation","commit","feedback"],
+  chips:["从客户场景开场","说清当前限制","承诺有边界","征求反馈、定下一步"], words:["use_case","roadmap","limitation","commit","feedback"],
   quiz:[
   {stem:"“客户的实际使用场景”对应哪个词？",hint:"客户会怎么用这个产品。",opts:["use case","trade-off","spec"],ans:0,fb:"use case。trade-off 是取舍，spec 是规格。"},
   {stem:"I can't <code>____</code> to the full range today, but it's on the roadmap for next month.",hint:"承诺。",opts:["escalate","commit","reproduce"],ans:1,fb:"commit to 承诺。"},
@@ -663,7 +663,7 @@ const TASKS = {
 "pjm:one_on_one": {
   goals:["学会 5 个管理工期和风险时必用的词","通过 3 道快测","向 Sam 拿到 ETA、识别风险并定出对外沟通"], wordsTitle:"工期与风险的 5 个词",
   chatTitle:"去找 Sam", chatLead:"你去找负责排查的 Sam。目标是拿到时间、识别风险、做出决定。",
-  chips:["要 ETA","识别风险","对冲决策","对外沟通"], words:["eta","milestone","lead_time","risk","escalate"],
+  chips:["拿到预计时间","识别风险","做对冲决策","对外沟通"], words:["eta","milestone","lead_time","risk","escalate"],
   quiz:[
   {stem:"“备件的交货周期”对应哪个词？",hint:"从下单到收到货的时间。",opts:["lead time","uptime","milestone"],ans:0,fb:"lead time。uptime 是正常运行时间。"},
   {stem:"What's your <code>____</code> for the fix?",hint:"预计完成时间。",opts:["BOM","ETA","ROI"],ans:1,fb:"ETA。BOM 物料清单，ROI 投资回报率。"},
@@ -691,7 +691,7 @@ const TASKS = {
 "pjm:meeting": {
   goals:["学会 5 个主持进度讨论必用的词","通过 3 道快测","在例会上给出状态、识别依赖、分配 owner 和 deadline"], wordsTitle:"进度讨论的 5 个词",
   chatTitle:"例会上管进度", chatLead:"Priya 让你讲进度。Sam 会抛出交货周期，你要把它变成依赖项、分配负责人，并决定何时通知客户。",
-  chips:["对里程碑说状态","识别 dependency","定 owner 和 deadline","沟通时机"], words:["agenda","on_track","dependency","owner","deadline"],
+  chips:["对里程碑说状态","识别依赖项","定负责人和截止时间","把握沟通时机"], words:["agenda","on_track","dependency","owner","deadline"],
   quiz:[
   {stem:"“按计划进行”怎么说？",hint:"项目状态的三种说法之一。",opts:["on track","on hold","offline"],ans:0,fb:"on track 按计划。on hold 是暂停，offline 是离线/会后。"},
   {stem:"Ordering the encoder is a <code>____</code> for the Friday milestone.",hint:"必须先发生的事。",opts:["deliverable","dependency","workaround"],ans:1,fb:"dependency 依赖项。deliverable 是交付物。"},
@@ -719,7 +719,7 @@ const TASKS = {
 "pjm:presentation": {
   goals:["学会 5 个向客户汇报进度必用的词","通过 3 道快测","向客户讲清风险、应急方案和修订计划"], wordsTitle:"进度汇报的 5 个词",
   chatTitle:"向客户汇报进度", chatLead:"你向客户汇报项目进度。有的轮次是舞台提示，由你开口；有的轮次是 Mr. Tanaka 的追问。",
-  chips:["开场有结构","风险说清两种情况","给 contingency","修订计划请确认"], words:["timeline","slip","contingency","sign_off","revised_plan"],
+  chips:["开场有结构","风险说清两种情况","给出应急方案","修订计划请确认"], words:["timeline","slip","contingency","sign_off","revised_plan"],
   quiz:[
   {stem:"“延期”（动词）怎么说？",hint:"日期往后挪。",opts:["slip","escalate","align"],ans:0,fb:"slip 延期。escalate 上报，align 对齐。"},
   {stem:"If the part is late, our <code>____</code> is to run the acceptance tests on the capped range.",hint:"应急方案。",opts:["milestone","contingency","agenda"],ans:1,fb:"contingency 应急方案。"},
