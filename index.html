@@ -304,7 +304,6 @@
       <div><b id="mWords">0</b><small>学过的词</small></div>
       <div><b id="mCombos">0/9</b><small>练过的场景</small></div>
     </div>
-    <div class="foot" id="menuFoot"></div>
   </section>
 
   <!-- MISSION BRIEF -->
@@ -788,7 +787,6 @@ function renderMenu() {
   let done = {}; try { done = JSON.parse(store.get('rt.done') || '{}'); } catch {}
   const d = dailyState(), key = todayKey(), today = d.log[key], n = streak(d);
   $('#mStreak').textContent = n; $('#mWords').textContent = Object.keys(d.srs).length; $('#mCombos').textContent = `${Object.keys(done).length}/9`;
-  const t = new Date(); $('#menuFoot').textContent = `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 周${"日一二三四五六"[t.getDay()]}`;
 }
 $('#chg').addEventListener('click', () => go('s-setup'));
 $('#goMission').addEventListener('click', () => go('s-home'));
